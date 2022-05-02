@@ -55,7 +55,6 @@ function loginUser(dispatch, login, password, history, setIsLoading, setError) {
   setIsLoading(true);
 
   if (!!login && !!password) {
-    debugger
       var formdata = new FormData();
             formdata.append("email", login);
             formdata.append("password", password);
@@ -65,10 +64,8 @@ function loginUser(dispatch, login, password, history, setIsLoading, setError) {
                 data: formdata,
             }).then((response) => {
                 // console.log("response", response)
-                debugger
                 const Data = response.data
                 if (response.status == 200) {
-                  debugger
                   localStorage.setItem('id_token', Data.token)
       setError(null)
       setIsLoading(false)

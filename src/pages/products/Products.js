@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Grid } from "@material-ui/core";
+import { Button, CircularProgress, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import MUIDataTable from "mui-datatables";
 import { useHistory } from "react-router-dom";
@@ -42,36 +42,43 @@ const useStyles = makeStyles((theme) => ({
 export default function Tables() {
   const classes = useStyles();
   const [products,setProducts] = useState([])
+  const [loading,setLoading] = useState(false)
   const history = useHistory();
   useEffect(() => {
+    setLoading(true)
     const res = axios({
       method: 'GET',
       url: `https://cybercitiesapi.developer-um.xyz/api/products`,
   }).then((response) => {
       // console.log("response", response)
-      debugger
       const Data = response.data
       if (response.status == 200) {
-        debugger
         let product = []
-        // Data.Products.map((pro)=>{
-        //   product.push(pro.)
-        // })
-        setProducts(Data.Products)
-        console.log(response)
+        Data.Products.map((pro)=>{
+          let singleProduct = [pro?.product_name,pro.brand,pro.discount,pro?.price]
+          product.push(singleProduct)
+          
+        })
+        setProducts(product)
+    setLoading(false)
         
   
       }
       else {
+        setLoading(false)
+
         console.log("error")
       }
     }).catch((error)=>{
-      debugger
       console.log(error)
+      setLoading(false)
+
     })
   }, [])
   
   return (
+
+
     <>
      <div style={{display:'flex',alignItems:'center',flexDirection:'row',justifyContent:'space-between',}}>
       <PageTitle title="Products" />
@@ -88,17 +95,18 @@ export default function Tables() {
         </Button>
       </div>
       <Grid container spacing={4}>
-        <Grid item xs={12}>
+     {loading ? <CircularProgress size={26} className={classes.loginLoader} style ={{align:'center',justifyContent:'center',alignContent:'center'}} />
+     :   <Grid item xs={12}>
           <MUIDataTable
             title="Product List"
-            data={datatableData}
-            columns={["Name", "Brand", "Made in", "Price"]}
+            data={products}
+            columns={["Name", "Brand", "Discount", "Price"]}
             options={{
               filterType: "checkbox",
             }}
           />
-        </Grid>
-        <Grid item xs={12}>
+        </Grid>}
+        {/* <Grid item xs={12}>
           <Widget
             title="Material-UI Table"
             upperTitle
@@ -107,7 +115,7 @@ export default function Tables() {
           >
             <Table data={mock.table} />
           </Widget>
-        </Grid>
+        </Grid> */}
       </Grid>
     </>
   );

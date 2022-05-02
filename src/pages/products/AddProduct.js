@@ -93,7 +93,7 @@ function TimePickerWrapper(props) {
 function AddProduct() {
   const [images, setImages] = useState([])
   function onImageChange(e){
-    debugger
+    
     setImages([...e.target.files])
   }
 
@@ -115,15 +115,14 @@ const onSubmit = async (values) => {
   formdata.append("product_details", values.target[2].value);
   formdata.append("product_image[0]", images[0]);
   formdata.append("product_image[1]", images[0]);
-  formdata.append("color[]", values.target[7].value);
-  formdata.append("size[]", values.target[7].value);
-  formdata.append("price", values.target[10].value);
-  formdata.append("discount", values.target[11].value);
+  formdata.append("color[]", "Green");
+  formdata.append("size[]", values.target[9].value);
+  formdata.append("price", values.target[11].value);
+  formdata.append("discount", values.target[12].value);
   // formdata.append("product_selected_qty",values.target[7].value );
-  formdata.append("product_status", values.target[4].value);
+  formdata.append("product_status", values.target[5].value);
   formdata.append("product_stock", values.target[7].value);
   // const res = await axios.post('https://cybercitiesapi.developer-um.xyz/api/add/product',formdata,{headers:headers})
-  debugger
   axios({
     method: 'POST',
     url: `https://cybercitiesapi.developer-um.xyz/api/add/product`,
@@ -131,10 +130,8 @@ const onSubmit = async (values) => {
     headers:headers
 }).then((response) => {
     // console.log("response", response)
-    debugger
     const Data = response.data
     if (response.status == 200) {
-      debugger
       console.log(response)
       setLoading(false)
       alert("Product has been added Successfully!")
@@ -143,7 +140,6 @@ const onSubmit = async (values) => {
       console.log("error")
     }
   }).catch((error)=>{
-    debugger
     console.log(error)
   })
   // const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -217,7 +213,6 @@ const validate = values => {
                     required
                     multiline
                     onChange={(e)=>{
-                      debugger
                       setDetails(e)}}
                     component={TextField}
                     type="product_details"
@@ -392,7 +387,7 @@ const validate = values => {
         )}
       />
     </div>
-    <div style={{ padding: 16, margin: 'auto', maxWidth:700, left:0}}>
+    {/* <div style={{ padding: 16, margin: 'auto', maxWidth:700, left:0}}>
       <CssBaseline />
       <Typography variant="h4" align="center" component="h1" gutterBottom>
         Product :{details}
@@ -402,43 +397,39 @@ const validate = values => {
     <div>
             <Paper style={{ padding: 16 }}>
               <Grid container alignItems="flex-start" spacing={2}>
-                <Grid item xs={6}>
-                <Typography variant="h7" align="center" component="h4" gutterBottom>
-                Product Title:
+              <Grid item xs={12}>
+                <img src={images?.name} alt="img"/> 
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="h4" align="left" component="h4" gutterBottom>
+                Product Title: 
                 </Typography>
                 </Grid>
-                <Grid item xs={6}>
-               
+                <Grid item xs={12}>
+                <Typography variant="h4" align="left" component="h4" gutterBottom>
+                Product Brand: 
+                </Typography>
                 </Grid>
                 <Grid item xs={12}>
-          
+                <Typography variant="h4" align="left" component="h4" gutterBottom>
+                Product Details: 
+                </Typography>
                 </Grid>
                 <Grid item xs={12}>
-
-                </Grid>
-                <Grid item>
-          
-                </Grid>
-                <Grid item>
-                
+                <Typography variant="h4" align="left" component="h4" gutterBottom>
+                Product Price: 
+                </Typography>
                 </Grid>
                 <Grid item xs={12}>
-               
+                <Typography variant="h4" align="left" component="h4" gutterBottom>
+                Discounted Price: 
+                </Typography>
                 </Grid>
-                <Grid item xs={6}>
-              
-                </Grid>
-                <Grid item xs={6}>
-                  
-                </Grid>
-                <Grid item xs={12}>
-                </Grid>
-               
-              
+             
               </Grid>
             </Paper>
         </div>
-    </div>
+    </div> */}
     </div>
   );
 }

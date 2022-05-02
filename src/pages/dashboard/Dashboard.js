@@ -36,12 +36,18 @@ import BigStat from "./components/BigStat/BigStat";
 
 const mainChartData = getMainChartData();
 const PieChartData = [
-  { name: "Group A", value: 400, color: "primary" },
-  { name: "Group B", value: 300, color: "secondary" },
-  { name: "Group C", value: 300, color: "warning" },
-  { name: "Group D", value: 200, color: "success" },
+  { name: "Acer Laptop", value: 400, color: "primary" },
+  { name: "SSD", value: 300, color: "secondary" },
+  { name: "Apple Macbook", value: 300, color: "warning" },
+  { name: "Power Cables", value: 200, color: "success" },
 ];
 
+const PieChartData2 = [
+  { name: "John", value: 400, color: "primary" },
+  { name: "Smith", value: 300, color: "secondary" },
+  { name: "Snow", value: 300, color: "warning" },
+  { name: "Petter", value: 200, color: "success" },
+];
 export default function Dashboard(props) {
   var classes = useStyles();
   var theme = useTheme();
@@ -51,17 +57,19 @@ export default function Dashboard(props) {
 
   return (
     <>
-      <PageTitle title="Dashboard" button={<Button
-      variant="contained"
-      size="medium"
-      color="secondary"
-    >
-        Latest Reports
-    </Button>} />
+      <PageTitle title="Dashboard" 
+    //   button={<Button
+    //   variant="contained"
+    //   size="medium"
+    //   color="secondary"
+    // >
+    //     Latest Reports
+    // </Button>}
+     />
       <Grid container spacing={4}>
         <Grid item lg={3} md={4} sm={6} xs={12}>
           <Widget
-            title="Visits Today"
+            title="Total Sales"
             upperTitle
             bodyClass={classes.fullHeightBody}
             className={classes.card}
@@ -104,32 +112,37 @@ export default function Dashboard(props) {
             >
               <Grid item xs={4}>
                 <Typography color="text" colorBrightness="secondary" noWrap>
-                  Registrations
+                  Today
                 </Typography>
                 <Typography size="md">860</Typography>
               </Grid>
               <Grid item xs={4}>
                 <Typography color="text" colorBrightness="secondary" noWrap>
-                  Sign Out
+                  Last Week
                 </Typography>
-                <Typography size="md">32</Typography>
+                <Typography size="md">3200</Typography>
               </Grid>
               <Grid item xs={4}>
                 <Typography color="text" colorBrightness="secondary" noWrap>
-                  Rate
+                  Last Month
                 </Typography>
-                <Typography size="md">3.25%</Typography>
+                <Typography size="md">8678</Typography>
               </Grid>
             </Grid>
           </Widget>
         </Grid>
         <Grid item lg={3} md={8} sm={6} xs={12}>
           <Widget
-            title="App Performance"
+            title="All Products"
             upperTitle
             className={classes.card}
             bodyClass={classes.fullHeightBody}
           >
+            <Grid item xs={6}>
+              <Typography size="xl" weight="medium" noWrap>
+                278
+              </Typography>
+                </Grid>
             <div className={classes.performanceLegendWrapper}>
               <div className={classes.legendElement}>
                 <Dot color="warning" />
@@ -138,7 +151,7 @@ export default function Dashboard(props) {
                   colorBrightness="secondary"
                   className={classes.legendElementText}
                 >
-                  Integration
+                  Laptops
                 </Typography>
               </div>
               <div className={classes.legendElement}>
@@ -148,7 +161,7 @@ export default function Dashboard(props) {
                   colorBrightness="secondary"
                   className={classes.legendElementText}
                 >
-                  SDK
+                  Accessories
                 </Typography>
               </div>
             </div>
@@ -159,7 +172,7 @@ export default function Dashboard(props) {
                 colorBrightness="secondary"
                 className={classes.progressSectionTitle}
               >
-                Integration
+                Laptops
               </Typography>
               <LinearProgress
                 variant="determinate"
@@ -175,7 +188,7 @@ export default function Dashboard(props) {
                 colorBrightness="secondary"
                 className={classes.progressSectionTitle}
               >
-                SDK
+                  Accessories
               </Typography>
               <LinearProgress
                 variant="determinate"
@@ -186,7 +199,7 @@ export default function Dashboard(props) {
             </div>
           </Widget>
         </Grid>
-        <Grid item lg={3} md={8} sm={6} xs={12}>
+        {/* <Grid item lg={3} md={8} sm={6} xs={12}>
           <Widget
             title="Server Overview"
             upperTitle
@@ -266,9 +279,9 @@ export default function Dashboard(props) {
               </div>
             </div>
           </Widget>
-        </Grid>
+        </Grid> */}
         <Grid item lg={3} md={4} sm={6} xs={12}>
-          <Widget title="Revenue Breakdown" upperTitle className={classes.card}>
+          <Widget title="Top Products" upperTitle className={classes.card}>
             <Grid container spacing={2}>
               <Grid item xs={6}>
                 <ResponsiveContainer width="100%" height={144}>
@@ -307,6 +320,46 @@ export default function Dashboard(props) {
             </Grid>
           </Widget>
         </Grid>
+        <Grid item lg={3} md={4} sm={6} xs={12}>
+          <Widget title="Top Customers" upperTitle className={classes.card}>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <ResponsiveContainer width="100%" height={144}>
+                  <PieChart>
+                    <Pie
+                      data={PieChartData2}
+                      innerRadius={30}
+                      outerRadius={40}
+                      dataKey="value"
+                    >
+                      {PieChartData2.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={theme.palette[entry.color].main}
+                        />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+              </Grid>
+              <Grid item xs={6}>
+                <div className={classes.pieChartLegendWrapper}>
+                  {PieChartData2.map(({ name, value, color }, index) => (
+                    <div key={color} className={classes.legendItemContainer}>
+                      <Dot color={color} />
+                      <Typography style={{ whiteSpace: "nowrap", fontSize: 12 }} >
+                        &nbsp;{name}&nbsp;
+                      </Typography>
+                      <Typography color="text" colorBrightness="secondary">
+                        &nbsp; $ {value}
+                      </Typography>
+                    </div>
+                  ))}
+                </div>
+              </Grid>
+            </Grid>
+          </Widget>
+        </Grid>
         <Grid item xs={12}>
           <Widget
             bodyClass={classes.mainChartBody}
@@ -317,29 +370,29 @@ export default function Dashboard(props) {
                   color="text"
                   colorBrightness="secondary"
                 >
-                  Daily Line Chart
+                  Sales Chart
                 </Typography>
                 <div className={classes.mainChartHeaderLabels}>
                   <div className={classes.mainChartHeaderLabel}>
                     <Dot color="warning" />
                     <Typography className={classes.mainChartLegentElement}>
-                      Tablet
+                      This Month
                     </Typography>
                   </div>
                   <div className={classes.mainChartHeaderLabel}>
                     <Dot color="primary" />
                     <Typography className={classes.mainChartLegentElement}>
-                      Mobile
+                      Last Month
                     </Typography>
                   </div>
-                  <div className={classes.mainChartHeaderLabel}>
+                  {/* <div className={classes.mainChartHeaderLabel}>
                     <Dot color="secondary" />
                     <Typography className={classes.mainChartLegentElement}>
                       Desktop
                     </Typography>
-                  </div>
+                  </div> */}
                 </div>
-                <Select
+                {/* <Select
                   value={mainChartState}
                   onChange={e => setMainChartState(e.target.value)}
                   input={
@@ -356,7 +409,7 @@ export default function Dashboard(props) {
                   <MenuItem value="daily">Daily</MenuItem>
                   <MenuItem value="weekly">Weekly</MenuItem>
                   <MenuItem value="monthly">Monthly</MenuItem>
-                </Select>
+                </Select> */}
               </div>
             }
           >
@@ -407,20 +460,20 @@ export default function Dashboard(props) {
             </ResponsiveContainer>
           </Widget>
         </Grid>
-        {mock.bigStat.map(stat => (
+        {/* {mock.bigStat.map(stat => (
           <Grid item md={4} sm={6} xs={12} key={stat.product}>
             <BigStat {...stat} />
           </Grid>
-        ))}
+        ))} */}
         <Grid item xs={12}>
-          <Widget
+          {/* <Widget
             title="Support Requests"
             upperTitle
             noBodyPadding
             bodyClass={classes.tableWidget}
           >
             <Table data={mock.table} />
-          </Widget>
+          </Widget> */}
         </Grid>
       </Grid>
     </>

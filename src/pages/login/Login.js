@@ -57,14 +57,14 @@ function Login(props) {
           {activeTabId === 0 && (
             <React.Fragment>
             
-              <Button size="large" className={classes.googleButton}>
+              {/* <Button size="large" className={classes.googleButton}>
                 <img src={google} alt="google" className={classes.googleIcon} />
                 &nbsp;Sign in with Google
-              </Button>
+              </Button> */}
               <div className={classes.formDividerContainer}>
-                <div className={classes.formDivider} />
+                {/* <div className={classes.formDivider} />
                 <Typography className={classes.formDividerWord}>or</Typography>
-                <div className={classes.formDivider} />
+                <div className={classes.formDivider} /> */}
               </div>
               <Fade in={error}>
                 <Typography color="secondary" className={classes.errorMessage}>
@@ -126,13 +126,13 @@ function Login(props) {
                     Login
                   </Button>
                 )}
-                <Button
+                {/* <Button
                   color="primary"
                   size="large"
                   className={classes.forgetButton}
                 >
                   Forget Password
-                </Button>
+                </Button> */}
               </div>
             </React.Fragment>
           )}
@@ -224,12 +224,12 @@ function Login(props) {
                   </Button>
                 )}
               </div>
-              <div className={classes.formDividerContainer}>
+              {/* <div className={classes.formDividerContainer}>
                 <div className={classes.formDivider} />
                 <Typography className={classes.formDividerWord}>or</Typography>
                 <div className={classes.formDivider} />
-              </div>
-              <Button
+              </div> */}
+              {/* <Button
                 size="large"
                 className={classnames(
                   classes.googleButton,
@@ -238,12 +238,12 @@ function Login(props) {
               >
                 <img src={google} alt="google" className={classes.googleIcon} />
                 &nbsp;Sign in with Google
-              </Button>
+              </Button> */}
             </React.Fragment>
           )}
         </div>
         <Typography color="primary" className={classes.copyright}>
-        © 2014-{new Date().getFullYear()} <a style={{ textDecoration: 'none', color: 'inherit' }} href="https://flatlogic.com" rel="noopener noreferrer" target="_blank">Flatlogic</a>, LLC. All rights reserved.
+        © {new Date().getFullYear()} <a style={{ textDecoration: 'none', color: 'inherit' }} href="https://cyeber-cities.web.app/" rel="noopener noreferrer" target="_blank">Cyber Cities</a>,All rights reserved.
         </Typography>
       </div>
     </Grid>

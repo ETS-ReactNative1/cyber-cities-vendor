@@ -70,7 +70,7 @@ function Layout(props) {
               <Route path="/app/ui/icons" component={Icons} />
               <Route path="/app/ui/charts" component={Charts} />
             </Switch>
-            <Box
+            {/* <Box
               mt={5}
               width={"100%"}
               display={"flex"}
@@ -144,7 +144,7 @@ function Layout(props) {
                   </IconButton>
                 </Link>
               </div>
-            </Box>
+            </Box> */}
           </div>
         </>
     </div>
