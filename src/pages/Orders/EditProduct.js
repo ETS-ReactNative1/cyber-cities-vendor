@@ -37,59 +37,83 @@ import {
   DatePicker,
 } from "@material-ui/pickers";
 import axios from "axios";
+import { useHistory } from "react-router-dom";
 
 // import CircularProgress from '@mui/material/CircularProgress';
 
-function AddProduct() {
+function EditProduct() {
+  const history = useHistory();
+
   const [images, setImages] = useState([]);
+  const ids = history.location.state?.data
+
+
   const [imageUrl, setImageUrl] = useState([]);
+  const [id, setId] = useState(null);
 
   const token = localStorage.getItem("id_token");
 
-  
   var headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
   };
-  function onImageChange(e) {
-    debugger;
-    setImages([...images, ...e.target.files]);
-    setImageUrl([...imageUrl, URL.createObjectURL(...e.target.files)]);
-  }
+ 
+  const [loading, setLoading] = useState(false);
+  const [details, setDetails] = useState("");
+  const [productFromAPI, setProductFromAPI] = useState("");
+  
   const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [subCategory, setSubCategory] = useState([]);
+  function onImageChange(e) {
+    debugger;
+    const obj ={...e.target.files}
+    setImages([...images, ...e.target.files]);
+    setImageUrl([...imageUrl, URL.createObjectURL(...e.target.files)]);
+  }
   useEffect(() => {
+      setLoading(true);
+      let formData = new FormData();
+        formData.append('id',ids)
     axios({
-      method: "GET",
-      url: `https://cybercitiesapi.developer-um.xyz/api/category`,
+      method: "POST",
+      url: `https://cybercitiesapi.developer-um.xyz/api/show/product`,
       headers: headers,
+      data: formData,
     })
       .then((response) => {
         // console.log("response", response)
-        const Data = response.data;
+        const Data = response.data.Products[0];
+        debugger
         if (response.status == 200) {
           console.log(response);
-          if (Data.Category.length > 0) {
-            let category = [];
-            Data.Category.map((cat) => {
-              let singleCategory = { ...cat, label: cat.name };
-              category.push(singleCategory);
-            });
-            setCategories(category);
-          }
+            setId(Data.id)
+            const cat = {...Data.category,value:Data.category.name,label:Data.category.name}
+            setProductFromAPI(Data)
+            setImages(Data.image)
+            let tempImg = []
+            Data.image.map((img,index)=>{
+                debugger
+                tempImg.push(`https://cybercitiesapi.developer-um.xyz/storage/${img.image}`)
+            })
+              setImageUrl(tempImg)
+
+            setCategory({value:Data.category.name,label:Data.category.name})
+            setSubCategory({value:Data.sub_category.name,label:Data.sub_category.name})
+            setLoading(false)
         } else {
           console.log("error");
+          setLoading(false)
         }
       })
       .catch((error) => {
         console.log(error);
+        setLoading(false)
       });
   }, []);
 
-  const [loading, setLoading] = useState(false);
-  const [details, setDetails] = useState("");
+ 
   const onSubmit = async (values) => {
     values.preventDefault();
     setLoading(true);
@@ -176,41 +200,17 @@ function AddProduct() {
     setSubCategory(newValue.name);
   };
 
-  //  const  handleInputChange = (inputValue,actionMeta) => {
-  //     // console.group('Input Changed');
-  //     console.log(inputValue);
-  //     console.log(`action: ${actionMeta.action}`);
-  //     // console.groupEnd();
-  //   };
-
-  const colourOptions = [
-    {
-      value: "Green",
-      label: "Green",
-      name: "colour",
-    },
-    {
-      value: "Grseen",
-      label: "Gresaen",
-      name: "colour",
-    },
-    {
-      value: "Greewn",
-      label: "Greedn",
-      name: "colour",
-    },
-  ];
   return (
     <div style={{ display: "flex" }}>
       <div style={{ padding: 16, margin: "auto", maxWidth: 700, left: 0 }}>
         <CssBaseline />
         <Typography variant="h4" align="center" component="h1" gutterBottom>
-          Add Product Details
+          Edit Product Details
         </Typography>
 
         <Form
           onSubmit={onSubmit}
-          initialValues={{ employed: true, stooge: "larry" }}
+          initialValues={productFromAPI}
           validate={validate}
           render={({ handleSubmit, reset, submitting, pristine, values }) => (
             <form onSubmit={(e) => onSubmit(e)} noValidate>
@@ -220,7 +220,7 @@ function AddProduct() {
                     <Field
                       fullWidth
                       required
-                      name="productName"
+                      name="product_name"
                       component={TextField}
                       type="text"
                       label="Product Name"
@@ -238,6 +238,7 @@ function AddProduct() {
                   </Grid>
                   <Grid item xs={6}>
                     <CreatableSelect
+                            value={category}
                       isClearable
                       onChange={handleChange}
                       placeholder="Select Category"
@@ -248,6 +249,7 @@ function AddProduct() {
                   <Grid item xs={6}>
                     <CreatableSelect
                       isClearable
+                      value={subCategory}
                       onChange={handleChangeSubCategory}
                       placeholder="Select Sub Category"
                       // onInputChange={handleInputChange}
@@ -372,7 +374,7 @@ function AddProduct() {
                     <Field
                       fullWidth
                       required
-                      name="discountedPrice"
+                      name="discount"
                       component={TextField}
                       type="number"
                       label="Discounted Price"
@@ -510,4 +512,4 @@ function AddProduct() {
 }
 
 // ReactDOM.render(<App />, document.querySelector('#root'));
-export default AddProduct;
+export default EditProduct;

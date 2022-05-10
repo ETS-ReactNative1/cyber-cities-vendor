@@ -39,6 +39,8 @@ const structure = [
   // },
   // { id: 2, label: "Tables", link: "/app/tables", icon: <TableIcon /> },
   { id: 14, label: "Products", link: "/app/products", icon: <TableIcon /> },
+  { id: 14, label: "Orders", link: "/app/orders", icon: <LibraryIcon /> },
+  { id: 14, label: "Profile", link: "/app/profile", icon: <FAQIcon /> },
   // {
   //   id: 3,
   //   label: "Notifications",

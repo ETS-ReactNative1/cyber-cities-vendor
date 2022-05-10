@@ -36,6 +36,8 @@ import Charts from "../../pages/charts";
 // context
 import { useLayoutState } from "../../context/LayoutContext";
 import AddProduct from "../../pages/products/AddProduct";
+import EditProduct from "../../pages/products/EditProduct";
+import Orders from "../../pages/Orders/Orders";
 
 function Layout(props) {
   var classes = useStyles();
@@ -57,9 +59,12 @@ function Layout(props) {
             <Switch>
               <Route path="/app/dashboard" component={Dashboard} />
               <Route path="/app/products" component={Products} />
+              <Route path="/app/product/:id" component={EditProduct} />
               <Route path="/app/addProduct" component={AddProduct} />
+              <Route path="/app/profile" component={Tables} />
+              <Route path="/app/orders" component={Orders} />
               <Route path="/app/typography" component={Typography} />
-              <Route path="/app/tables" component={Tables} />
+              {/* <Route path="/app/tables" component={Tables} /> */}
               <Route path="/app/notifications" component={Notifications} />
               <Route
                 exact

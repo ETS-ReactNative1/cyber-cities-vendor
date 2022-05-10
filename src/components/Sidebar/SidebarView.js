@@ -21,10 +21,10 @@ import SidebarLink from './components/SidebarLink/SidebarLinkContainer';
 import Dot from './components/Dot';
 
 const structure = [
-  { id: 0, label: 'Dashboard', link: '/app/dashboard', icon: <HomeIcon /> },
+  { id: 0, label: 'Dashboard', link: '/dashboard', icon: <HomeIcon /> },
   // { id: 1, label: 'Typography', link: '/app/typography', icon: <TypographyIcon /> },
   // { id: 2, label: 'Tables', link: '/app/tables', icon: <TableIcon /> },
-  { id: 3, label: 'Notifications', link: '/app/notifications', icon: <NotificationsIcon />},
+  { id: 3, label: 'Notifications', link: '/notifications', icon: <NotificationsIcon />},
   // {
   //   id: 4,
   //   label: 'UI Elements',

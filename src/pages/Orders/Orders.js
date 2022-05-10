@@ -5,8 +5,8 @@ import MUIDataTable from "mui-datatables";
 import { useHistory } from "react-router-dom";
 
 // components
-import PageTitle from "../../components/PageTitle";
-import Widget from "../../components/Widget";
+import PageTitle from "../../components/PageTitle/PageTitle";
+import Widget from "../../components/Widget/Widget";
 import Table from "../dashboard/components/Table/Table";
 
 // data
@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Tables() {
+export default function Orders() {
 
 
   const classes = useStyles();
@@ -149,9 +149,9 @@ const fetchProducts = async () => {
 
     <>
      <div style={{display:'flex',alignItems:'center',flexDirection:'row',justifyContent:'space-between',}}>
-      <PageTitle title="Products" />
+      <PageTitle title="Orders" />
      
-        <Button
+        {/* <Button
           onClick={() => {
             history.push('/app/addProduct')
           }}
@@ -160,15 +160,15 @@ const fetchProducts = async () => {
           variant="outlined"
         >
           Add New Product
-        </Button>
+        </Button> */}
       </div>
       <Grid container spacing={4}>
      {loading ? <CircularProgress size={26} className={classes.loginLoader} style ={{align:'center',justifyContent:'center',alignContent:'center'}} />
      :   <Grid item xs={12}>
           <MUIDataTable
-            title="Product List"
+            title="Order List"
             data={products}
-            columns={["Id","Name", "Brand", "Discount", "Price"]}
+            columns={["Order Id","Customer Name", "Status", "Discount", "Price"]}
             options={options}
           />
         </Grid>}

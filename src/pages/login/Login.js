@@ -33,6 +33,11 @@ function Login(props) {
   var [error, setError] = useState(null);
   var [activeTabId, setActiveTabId] = useState(0);
   var [nameValue, setNameValue] = useState("");
+  var [company, setCompany] = useState("");
+  var [phone, setPhone] = useState("");
+  var [city, setCity] = useState("");
+  var [state, setState] = useState("");
+  var [address, setAddress] = useState("");
   var [loginValue, setLoginValue] = useState("seller@gmail.com");
   var [passwordValue, setPasswordValue] = useState("12345678");
 
@@ -192,6 +197,81 @@ function Login(props) {
                 margin="normal"
                 placeholder="Password"
                 type="password"
+                fullWidth
+              />
+               <TextField
+                id="company"
+                InputProps={{
+                  classes: {
+                    underline: classes.textFieldUnderline,
+                    input: classes.textField,
+                  },
+                }}
+                value={company}
+                onChange={e => setCompany(e.target.value)}
+                margin="normal"
+                placeholder="Company"
+                type="text"
+                fullWidth
+              />
+              <TextField
+                id="phone"
+                InputProps={{
+                  classes: {
+                    underline: classes.textFieldUnderline,
+                    input: classes.textField,
+                  },
+                }}
+                value={phone}
+                onChange={e => setPhone(e.target.value)}
+                margin="normal"
+                placeholder="Phone No."
+                type="text"
+                fullWidth
+              />
+              <TextField
+                id="state"
+                InputProps={{
+                  classes: {
+                    underline: classes.textFieldUnderline,
+                    input: classes.textField,
+                  },
+                }}
+                value={state}
+                onChange={e => setState(e.target.value)}
+                margin="normal"
+                placeholder="State"
+                type="text"
+                fullWidth
+              />
+              <TextField
+                id="city"
+                InputProps={{
+                  classes: {
+                    underline: classes.textFieldUnderline,
+                    input: classes.textField,
+                  },
+                }}
+                value={city}
+                onChange={e => setCity(e.target.value)}
+                margin="normal"
+                placeholder="City"
+                type="text"
+                fullWidth
+              />
+              <TextField
+                id="address"
+                InputProps={{
+                  classes: {
+                    underline: classes.textFieldUnderline,
+                    input: classes.textField,
+                  },
+                }}
+                value={address}
+                onChange={e => setAddress(e.target.value)}
+                margin="normal"
+                placeholder="Address"
+                type="text"
                 fullWidth
               />
               <div className={classes.creatingButtonContainer}>
