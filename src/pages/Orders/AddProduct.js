@@ -52,7 +52,7 @@ function AddProduct() {
     Authorization: `Bearer ${token}`,
   };
   function onImageChange(e) {
-    debugger;
+    ;
     setImages([...images, ...e.target.files]);
     setImageUrl([...imageUrl, URL.createObjectURL(...e.target.files)]);
   }
@@ -110,7 +110,7 @@ function AddProduct() {
     // formdata.append("product_selected_qty",values.target[7].value );
     formdata.append("product_status", values.target[7].value);
     formdata.append("product_stock", values.target[7].value);
-    debugger;
+    ;
     // const res = await axios.post('https://cybercitiesapi.developer-um.xyz/api/add/product',formdata,{headers:headers})
     axios({
       method: "POST",
@@ -121,7 +121,7 @@ function AddProduct() {
       .then((response) => {
         // console.log("response", response)
         const Data = response.data;
-        debugger;
+        ;
         if (response.status == 200) {
           console.log(response);
           setLoading(false);
@@ -132,13 +132,13 @@ function AddProduct() {
         }
       })
       .catch((error) => {
-        debugger;
+        ;
         console.log(error);
       });
     // const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
     // await sleep(3000);
-    // debugger
+    // 
     // window.alert(JSON.stringify(values, 0, 2));
   };
   const validate = (values) => {

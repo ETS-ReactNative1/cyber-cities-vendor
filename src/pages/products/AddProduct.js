@@ -37,6 +37,8 @@ import {
   DatePicker,
 } from "@material-ui/pickers";
 import axios from "axios";
+import Swal from "sweetalert2";
+import { useHistory } from "react-router-dom";
 
 // import CircularProgress from '@mui/material/CircularProgress';
 
@@ -52,7 +54,7 @@ function AddProduct() {
     Authorization: `Bearer ${token}`,
   };
   function onImageChange(e) {
-    debugger;
+    ;
     setImages([...images, ...e.target.files]);
     setImageUrl([...imageUrl, URL.createObjectURL(...e.target.files)]);
   }
@@ -87,6 +89,7 @@ function AddProduct() {
         console.log(error);
       });
   }, []);
+  const history = useHistory();
 
   const [loading, setLoading] = useState(false);
   const [details, setDetails] = useState("");
@@ -110,7 +113,7 @@ function AddProduct() {
     // formdata.append("product_selected_qty",values.target[7].value );
     formdata.append("product_status", values.target[7].value);
     formdata.append("product_stock", values.target[7].value);
-    debugger;
+    ;
     // const res = await axios.post('https://cybercitiesapi.developer-um.xyz/api/add/product',formdata,{headers:headers})
     axios({
       method: "POST",
@@ -121,24 +124,28 @@ function AddProduct() {
       .then((response) => {
         // console.log("response", response)
         const Data = response.data;
-        debugger;
+        ;
         if (response.status == 200) {
           console.log(response);
           setLoading(false);
-          alert("Product has been added Successfully!");
-          window.location.href = "/app/products";
+          Swal.fire({
+            title: "Success!",
+            text: "Product has been added Successfully!",
+            icon: "success",
+          });
+          history.push("/app/products");
         } else {
           console.log("error");
         }
       })
       .catch((error) => {
-        debugger;
+        ;
         console.log(error);
       });
     // const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
     // await sleep(3000);
-    // debugger
+    // 
     // window.alert(JSON.stringify(values, 0, 2));
   };
   const validate = (values) => {
@@ -431,14 +438,7 @@ function AddProduct() {
                   </Grid>
                 </MuiPickersUtilsProvider> */}
                   <Grid item style={{ marginTop: 16 }}>
-                    <Button
-                      type="button"
-                      variant="contained"
-                      onClick={reset}
-                      disabled={submitting || pristine}
-                    >
-                      Reset
-                    </Button>
+                  
                   </Grid>
                   <Grid item style={{ marginTop: 16 }}>
                     <Button

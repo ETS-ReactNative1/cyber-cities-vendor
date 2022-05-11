@@ -37,83 +37,62 @@ import {
   DatePicker,
 } from "@material-ui/pickers";
 import axios from "axios";
+import Swal from "sweetalert2";
 import { useHistory } from "react-router-dom";
 
 // import CircularProgress from '@mui/material/CircularProgress';
 
-function EditProduct() {
-  const history = useHistory();
-
+function AddProduct() {
   const [images, setImages] = useState([]);
-  const ids = history.location.state?.data
-
-
   const [imageUrl, setImageUrl] = useState([]);
-  const [id, setId] = useState(null);
 
   const token = localStorage.getItem("id_token");
 
+  
   var headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
   };
- 
-  const [loading, setLoading] = useState(false);
-  const [details, setDetails] = useState("");
-  const [productFromAPI, setProductFromAPI] = useState("");
-  
+  function onImageChange(e) {
+    ;
+    setImages([...images, ...e.target.files]);
+    setImageUrl([...imageUrl, URL.createObjectURL(...e.target.files)]);
+  }
   const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [subCategory, setSubCategory] = useState([]);
-  function onImageChange(e) {
-    ;
-    const obj ={...e.target.files}
-    setImages([...images, ...e.target.files]);
-    setImageUrl([...imageUrl, URL.createObjectURL(...e.target.files)]);
-  }
   useEffect(() => {
-      setLoading(true);
-      let formData = new FormData();
-        formData.append('id',ids)
     axios({
-      method: "POST",
-      url: `https://cybercitiesapi.developer-um.xyz/api/show/product`,
+      method: "GET",
+      url: `https://cybercitiesapi.developer-um.xyz/api/category`,
       headers: headers,
-      data: formData,
     })
       .then((response) => {
         // console.log("response", response)
-        const Data = response.data.Products[0];
-        
+        const Data = response.data;
         if (response.status == 200) {
           console.log(response);
-            setId(Data.id)
-            const cat = {...Data.category,value:Data.category.name,label:Data.category.name}
-            setProductFromAPI(Data)
-            setImages(Data.image)
-            let tempImg = []
-            Data.image.map((img,index)=>{
-                
-                tempImg.push(`https://cybercitiesapi.developer-um.xyz/storage/${img.image}`)
-            })
-              setImageUrl(tempImg)
-
-            setCategory({value:Data.category.name,label:Data.category.name})
-            setSubCategory({value:Data.sub_category.name,label:Data.sub_category.name})
-            setLoading(false)
+          if (Data.Category.length > 0) {
+            let category = [];
+            Data.Category.map((cat) => {
+              let singleCategory = { ...cat, label: cat.name };
+              category.push(singleCategory);
+            });
+            setCategories(category);
+          }
         } else {
           console.log("error");
-          setLoading(false)
         }
       })
       .catch((error) => {
         console.log(error);
-        setLoading(false)
       });
   }, []);
+  const history = useHistory();
 
- 
+  const [loading, setLoading] = useState(false);
+  const [details, setDetails] = useState("");
   const onSubmit = async (values) => {
     values.preventDefault();
     setLoading(true);
@@ -149,8 +128,12 @@ function EditProduct() {
         if (response.status == 200) {
           console.log(response);
           setLoading(false);
-          alert("Product has been added Successfully!");
-          window.location.href = "/app/products";
+          Swal.fire({
+            title: "Success!",
+            text: "Product has been added Successfully!",
+            icon: "success",
+          });
+          history.push("/app/products");
         } else {
           console.log("error");
         }
@@ -200,17 +183,41 @@ function EditProduct() {
     setSubCategory(newValue.name);
   };
 
+  //  const  handleInputChange = (inputValue,actionMeta) => {
+  //     // console.group('Input Changed');
+  //     console.log(inputValue);
+  //     console.log(`action: ${actionMeta.action}`);
+  //     // console.groupEnd();
+  //   };
+
+  const colourOptions = [
+    {
+      value: "Green",
+      label: "Green",
+      name: "colour",
+    },
+    {
+      value: "Grseen",
+      label: "Gresaen",
+      name: "colour",
+    },
+    {
+      value: "Greewn",
+      label: "Greedn",
+      name: "colour",
+    },
+  ];
   return (
     <div style={{ display: "flex" }}>
       <div style={{ padding: 16, margin: "auto", maxWidth: 700, left: 0 }}>
         <CssBaseline />
         <Typography variant="h4" align="center" component="h1" gutterBottom>
-          Edit Product Details
+          Add Product Details
         </Typography>
 
         <Form
           onSubmit={onSubmit}
-          initialValues={productFromAPI}
+          initialValues={{ employed: true, stooge: "larry" }}
           validate={validate}
           render={({ handleSubmit, reset, submitting, pristine, values }) => (
             <form onSubmit={(e) => onSubmit(e)} noValidate>
@@ -220,7 +227,7 @@ function EditProduct() {
                     <Field
                       fullWidth
                       required
-                      name="product_name"
+                      name="productName"
                       component={TextField}
                       type="text"
                       label="Product Name"
@@ -238,7 +245,6 @@ function EditProduct() {
                   </Grid>
                   <Grid item xs={6}>
                     <CreatableSelect
-                            value={category}
                       isClearable
                       onChange={handleChange}
                       placeholder="Select Category"
@@ -249,7 +255,6 @@ function EditProduct() {
                   <Grid item xs={6}>
                     <CreatableSelect
                       isClearable
-                      value={subCategory}
                       onChange={handleChangeSubCategory}
                       placeholder="Select Sub Category"
                       // onInputChange={handleInputChange}
@@ -374,7 +379,7 @@ function EditProduct() {
                     <Field
                       fullWidth
                       required
-                      name="discount"
+                      name="discountedPrice"
                       component={TextField}
                       type="number"
                       label="Discounted Price"
@@ -512,4 +517,4 @@ function EditProduct() {
 }
 
 // ReactDOM.render(<App />, document.querySelector('#root'));
-export default EditProduct;
+export default AddProduct;

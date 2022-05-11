@@ -71,6 +71,7 @@ export default function Dashboard(props) {
           <Widget
             title="Total Sales"
             upperTitle
+            disableWidgetMenu = {true}
             bodyClass={classes.fullHeightBody}
             className={classes.card}
           >
@@ -135,6 +136,7 @@ export default function Dashboard(props) {
           <Widget
             title="All Products"
             upperTitle
+            disableWidgetMenu = {true}
             className={classes.card}
             bodyClass={classes.fullHeightBody}
           >
@@ -162,6 +164,16 @@ export default function Dashboard(props) {
                   className={classes.legendElementText}
                 >
                   Accessories
+                </Typography>
+              </div>
+              <div className={classes.legendElement}>
+                <Dot color="primary" />
+                <Typography
+                  color="text"
+                  colorBrightness="secondary"
+                  className={classes.legendElementText}
+                >
+                  Bags
                 </Typography>
               </div>
             </div>
@@ -192,7 +204,23 @@ export default function Dashboard(props) {
               </Typography>
               <LinearProgress
                 variant="determinate"
-                value={73}
+                value={33}
+                classes={{ barColorPrimary: classes.progressBarWarning }}
+                className={classes.progress}
+              />
+            </div>
+            <div>
+              <Typography
+                size="md"
+                color="text"
+                colorBrightness="secondary"
+                className={classes.progressSectionTitle}
+              >
+                  Bags
+              </Typography>
+              <LinearProgress
+                variant="determinate"
+                value={13}
                 classes={{ barColorPrimary: classes.progressBarWarning }}
                 className={classes.progress}
               />
@@ -281,7 +309,7 @@ export default function Dashboard(props) {
           </Widget>
         </Grid> */}
         <Grid item lg={3} md={4} sm={6} xs={12}>
-          <Widget title="Top Products" upperTitle className={classes.card}>
+          <Widget title="Top Products" disableWidgetMenu = {true} upperTitle className={classes.card}>
             <Grid container spacing={2}>
               <Grid item xs={6}>
                 <ResponsiveContainer width="100%" height={144}>
@@ -321,7 +349,7 @@ export default function Dashboard(props) {
           </Widget>
         </Grid>
         <Grid item lg={3} md={4} sm={6} xs={12}>
-          <Widget title="Top Customers" upperTitle className={classes.card}>
+          <Widget title="Top Customers" disableWidgetMenu = {true} upperTitle className={classes.card}>
             <Grid container spacing={2}>
               <Grid item xs={6}>
                 <ResponsiveContainer width="100%" height={144}>
@@ -362,6 +390,7 @@ export default function Dashboard(props) {
         </Grid>
         <Grid item xs={12}>
           <Widget
+          disableWidgetMenu = {true}
             bodyClass={classes.mainChartBody}
             header={
               <div className={classes.mainChartHeader}>

@@ -67,6 +67,7 @@ function loginUser(dispatch, login, password, history, setIsLoading, setError) {
                 const Data = response.data
                 if (response.status == 200) {
                   localStorage.setItem('id_token', Data.token)
+                  localStorage.setItem('user',JSON.stringify(Data.seller) )
       setError(null)
       setIsLoading(false)
       dispatch({ type: 'LOGIN_SUCCESS' })
@@ -93,6 +94,7 @@ function loginUser(dispatch, login, password, history, setIsLoading, setError) {
 
 function signOut(dispatch, history) {
   localStorage.removeItem("id_token");
+  localStorage.removeItem("user");
   dispatch({ type: "SIGN_OUT_SUCCESS" });
   history.push("/login");
 }

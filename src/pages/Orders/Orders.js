@@ -100,7 +100,7 @@ const fetchProducts = async () => {
       const filtered = products.filter((pro,index)=>{
         return pro[5] == e.data[0].index
       })
-    debugger
+    
     let formData = new FormData();
     formData.append('id',filtered[0][0])
     axios({
@@ -165,12 +165,12 @@ const fetchProducts = async () => {
       <Grid container spacing={4}>
      {loading ? <CircularProgress size={26} className={classes.loginLoader} style ={{align:'center',justifyContent:'center',alignContent:'center'}} />
      :   <Grid item xs={12}>
-          <MUIDataTable
+          {/* <MUIDataTable
             title="Order List"
             data={products}
             columns={["Order Id","Customer Name", "Status", "Discount", "Price"]}
             options={options}
-          />
+          /> */}
         </Grid>}
         {/* <Grid item xs={12}>
           <Widget

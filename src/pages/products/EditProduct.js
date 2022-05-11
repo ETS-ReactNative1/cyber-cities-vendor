@@ -11,6 +11,9 @@ import ReactDOM from "react-dom";
 import { Form, Field } from "react-final-form";
 import { TextField, Checkbox, Radio, Select } from "final-form-material-ui";
 import {
+  Cancel as CancelIcon,
+} from "@material-ui/icons";
+import {
   Typography,
   Paper,
   Link,
@@ -66,11 +69,74 @@ function EditProduct() {
   const [category, setCategory] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [subCategory, setSubCategory] = useState([]);
+
+  const getImages = () => {
+    axios({
+      method: "GET",
+      url: `https://cybercitiesapi.developer-um.xyz/api/image/${id}`,
+      headers: headers,
+    })
+      .then((response) => {
+        // console.log("response", response)
+        const Data = response.data;
+      debugger
+        if (Data.Images) {
+          debugger
+          setImages(Data.Images)
+      let tempImg = []
+      Data.Images.map((img,index)=>{
+          
+          tempImg.push({id:img.id,image:`https://cybercitiesapi.developer-um.xyz/storage/${img.image}`})
+      })
+        setImageUrl(tempImg)
+          console.log(response);
+          
+          
+        } else {
+          console.log("error");
+        }
+      })
+      .catch((error) => {
+        debugger
+        console.log(error);
+      });
+  }
+
+
   function onImageChange(e) {
-    debugger;
-    const obj ={...e.target.files}
-    setImages([...images, ...e.target.files]);
-    setImageUrl([...imageUrl, URL.createObjectURL(...e.target.files)]);
+let formData = new FormData();
+    formData.append("product_image[]", ...e.target.files);
+    formData.append("product_id", id);
+
+
+    
+
+    axios({
+      method: "POST",
+      url: `https://cybercitiesapi.developer-um.xyz/api/add/image`,
+      data: formData,
+      headers: headers,
+    })
+      .then((response) => {
+        // console.log("response", response)
+        const Data = response.data;
+      debugger
+        if (Data?.Successfull) {
+          console.log(response);
+          getImages()
+          
+        } else {
+          console.log("error");
+        }
+      })
+      .catch((error) => {
+        debugger
+        console.log(error);
+      });
+    // const obj ={...e.target.files}
+    // setImages([...images, ...e.target.files]);
+    // setImageUrl([...imageUrl, {image:URL.createObjectURL(...e.target.files)}]);
+
   }
   useEffect(() => {
       setLoading(true);
@@ -85,7 +151,7 @@ function EditProduct() {
       .then((response) => {
         // console.log("response", response)
         const Data = response.data.Products[0];
-        debugger
+        
         if (response.status == 200) {
           console.log(response);
             setId(Data.id)
@@ -94,8 +160,8 @@ function EditProduct() {
             setImages(Data.image)
             let tempImg = []
             Data.image.map((img,index)=>{
-                debugger
-                tempImg.push(`https://cybercitiesapi.developer-um.xyz/storage/${img.image}`)
+                
+                tempImg.push({id:img.id,image:`https://cybercitiesapi.developer-um.xyz/storage/${img.image}`})
             })
               setImageUrl(tempImg)
 
@@ -134,7 +200,7 @@ function EditProduct() {
     // formdata.append("product_selected_qty",values.target[7].value );
     formdata.append("product_status", values.target[7].value);
     formdata.append("product_stock", values.target[7].value);
-    debugger;
+    ;
     // const res = await axios.post('https://cybercitiesapi.developer-um.xyz/api/add/product',formdata,{headers:headers})
     axios({
       method: "POST",
@@ -145,7 +211,7 @@ function EditProduct() {
       .then((response) => {
         // console.log("response", response)
         const Data = response.data;
-        debugger;
+        ;
         if (response.status == 200) {
           console.log(response);
           setLoading(false);
@@ -156,13 +222,13 @@ function EditProduct() {
         }
       })
       .catch((error) => {
-        debugger;
+        ;
         console.log(error);
       });
     // const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
     // await sleep(3000);
-    // debugger
+    // 
     // window.alert(JSON.stringify(values, 0, 2));
   };
   const validate = (values) => {
@@ -199,6 +265,36 @@ function EditProduct() {
   const handleChangeSubCategory = (newValue, actionMeta) => {
     setSubCategory(newValue.name);
   };
+
+  const removeImage = (image) => {
+    
+    let formData = new FormData();
+    formData.append("id", image.id);
+    axios({
+      method: "POST",
+      url: `https://cybercitiesapi.developer-um.xyz/api/delete/image`,
+      data: formData,
+      headers: headers,
+    })
+      .then((response) => {
+        // console.log("response", response)
+        const Data = response.data;
+        ;
+        if (response.statusText == "OK") {
+          console.log(response);
+          getImages()
+          
+        } else {
+          console.log("error");
+        }
+      })
+      .catch((error) => {
+        ;
+        console.log(error);
+      });
+    // setImages(newImages);
+    // setImageUrl(newImagesUrl);
+  }
 
   return (
     <div style={{ display: "flex" }}>
@@ -405,7 +501,15 @@ function EditProduct() {
                      
                         {imageUrl.map((image, index) => (
                            <Box mt={2} textAlign="center" style={{display:'flex',alignItems:'center'}}>
-                          <img style ={{  border: '1px solid #ddd',borderRadius: '6px'}} src={image} alt={"asd"} width="200px" />
+                          <img style ={{  border: '1px solid #ddd',borderRadius: '6px'}} src={image.image} alt={"asd"} width="200px" />
+                          <CancelIcon style={{ cursor: 'pointer',marginLeft:-25,marginTop:-80 }} onClick={() =>removeImage(image)} 
+              // classes={{
+              //   root: classNames(
+              //     classes.headerIcon,
+              //     classes.headerIconCollapse,
+              //   ),
+              // }}
+            />
                           {index === 0 && <Typography variant="h6">Display Image</Typography>}
                       </Box>
 
@@ -432,24 +536,16 @@ function EditProduct() {
                     />
                   </Grid>
                 </MuiPickersUtilsProvider> */}
-                  <Grid item style={{ marginTop: 16 }}>
-                    <Button
-                      type="button"
-                      variant="contained"
-                      onClick={reset}
-                      disabled={submitting || pristine}
-                    >
-                      Reset
-                    </Button>
-                  </Grid>
-                  <Grid item style={{ marginTop: 16 }}>
+                  <Grid item style={{ marginTop: 16 }}  xs={12}>
                     <Button
                       variant="contained"
                       color="primary"
                       type="submit"
+                      size="large"
+                      align="center"
                       disabled={submitting}
                     >
-                      Submit
+                      Save Changes
                     </Button>
                   </Grid>
                   {loading && (
