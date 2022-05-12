@@ -105,6 +105,7 @@ function Sidebar({ location }) {
   });
 
   return (
+    <div style={{backgroundColor:'red'}}>
     <Drawer
       variant={isPermanent ? "permanent" : "temporary"}
       className={classNames(classes.drawer, {
@@ -140,6 +141,7 @@ function Sidebar({ location }) {
         ))}
       </List>
     </Drawer>
+    </div>
   );
 
   // ##################################################################

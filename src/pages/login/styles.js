@@ -13,7 +13,7 @@ export default makeStyles(theme => ({
   },
   logotypeContainer: {
     backgroundColor: theme.palette.primary.main,
-    width: "40%",
+    width: "50%",
     height: "100%",
     display: "flex",
     alignSelf: "center",
@@ -21,7 +21,7 @@ export default makeStyles(theme => ({
     justifyContent: "center",
     alignItems: "center",
     [theme.breakpoints.down("md")]: {
-      width: "40%",
+      width: "50%",
     },
     [theme.breakpoints.down("md")]: {
       display: "none",
@@ -40,7 +40,7 @@ export default makeStyles(theme => ({
     },
   },
   formContainer: {
-    width: "60%",
+    width: "50%",
     height: "100%",
     display: "flex",
     flexDirection: "column",

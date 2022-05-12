@@ -41,6 +41,7 @@ import {
 } from "@material-ui/pickers";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
+import Swal from "sweetalert2";
 
 // import CircularProgress from '@mui/material/CircularProgress';
 
@@ -138,6 +139,8 @@ let formData = new FormData();
     // setImageUrl([...imageUrl, {image:URL.createObjectURL(...e.target.files)}]);
 
   }
+
+
   useEffect(() => {
       setLoading(true);
       let formData = new FormData();
@@ -177,6 +180,31 @@ let formData = new FormData();
         console.log(error);
         setLoading(false)
       });
+      axios({
+        method: "GET",
+        url: `https://cybercitiesapi.developer-um.xyz/api/category`,
+        headers: headers,
+      })
+        .then((response) => {
+          // console.log("response", response)
+          const Data = response.data;
+          if (response.status == 200) {
+            console.log(response);
+            if (Data.Category.length > 0) {
+              let category = [];
+              Data.Category.map((cat) => {
+                let singleCategory = { ...cat, label: cat.name };
+                category.push(singleCategory);
+              });
+              setCategories(category);
+            }
+          } else {
+            console.log("error");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
   }, []);
 
  
@@ -184,14 +212,15 @@ let formData = new FormData();
     values.preventDefault();
     setLoading(true);
     var formdata = new FormData();
+    formdata.append("id", id);
     formdata.append("product_name", values.target[0].value);
     formdata.append("brand", values.target[1].value);
     formdata.append("product_details", values.target[4].value);
-    formdata.append("category", category);
-    formdata.append("sub_category", subCategory);
-    images.map((image) => {
-      formdata.append("product_image[]", image);
-    });
+    formdata.append("category", category.label);
+    formdata.append("sub_category", subCategory.label);
+    // images.map((image) => {
+    //   formdata.append("product_image[]", image);
+    // });
     // formdata.append("product_image[1]", images[0]);
     formdata.append("color[]", "Green");
     formdata.append("size[]", values.target[11].value);
@@ -200,29 +229,35 @@ let formData = new FormData();
     // formdata.append("product_selected_qty",values.target[7].value );
     formdata.append("product_status", values.target[7].value);
     formdata.append("product_stock", values.target[7].value);
-    ;
+    debugger
     // const res = await axios.post('https://cybercitiesapi.developer-um.xyz/api/add/product',formdata,{headers:headers})
     axios({
       method: "POST",
-      url: `https://cybercitiesapi.developer-um.xyz/api/add/product`,
+      url: `https://cybercitiesapi.developer-um.xyz/api/update/product`,
       data: formdata,
       headers: headers,
     })
       .then((response) => {
         // console.log("response", response)
         const Data = response.data;
-        ;
-        if (response.status == 200) {
+        debugger
+        if (Data.Successfull) {
           console.log(response);
           setLoading(false);
-          alert("Product has been added Successfully!");
-          window.location.href = "/app/products";
+          Swal.fire({
+            title: "Success",
+            text: "Product has been Updated Successfully!",
+            icon: "success",
+          });
+          history.push("/app/products");
+
         } else {
           console.log("error");
         }
       })
       .catch((error) => {
-        ;
+        debugger
+        setLoading(false);
         console.log(error);
       });
     // const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -252,9 +287,9 @@ let formData = new FormData();
   };
 
   const handleChange = (newValue, actionMeta) => {
-    setCategory(newValue.name);
+    setCategory({value:newValue?.name,label:newValue?.name});
     let category = [];
-    newValue.sub_category.map((cat) => {
+    newValue?.sub_category.map((cat) => {
       let singleCategory = { ...cat, label: cat.name };
       category.push(singleCategory);
     });
@@ -263,7 +298,7 @@ let formData = new FormData();
     // console.groupEnd();
   };
   const handleChangeSubCategory = (newValue, actionMeta) => {
-    setSubCategory(newValue.name);
+    setSubCategory({value:newValue?.name,label:newValue?.name});
   };
 
   const removeImage = (image) => {

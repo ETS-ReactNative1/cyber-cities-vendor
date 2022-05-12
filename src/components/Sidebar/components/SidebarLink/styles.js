@@ -4,7 +4,7 @@ export default makeStyles(theme => ({
   link: {
     textDecoration: "none",
     "&:hover, &:focus": {
-      backgroundColor: theme.palette.background.light,
+      backgroundColor: "#8598FF",
     },
   },
   externalLink: {
@@ -24,7 +24,7 @@ export default makeStyles(theme => ({
   },
   linkIcon: {
     marginRight: theme.spacing(1),
-    color: theme.palette.text.secondary + "99",
+    color: '#051572',
     transition: theme.transitions.create("color"),
     width: 24,
     display: "flex",
@@ -35,12 +35,12 @@ export default makeStyles(theme => ({
   },
   linkText: {
     padding: 0,
-    color: theme.palette.text.secondary + "CC",
+    color: '#051572',
     transition: theme.transitions.create(["opacity", "color"]),
     fontSize: 16,
   },
   linkTextActive: {
-    color: theme.palette.text.primary,
+    color: "#475DDC",
   },
   linkTextHidden: {
     opacity: 0,

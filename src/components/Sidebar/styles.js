@@ -17,6 +17,7 @@ export default makeStyles(theme => ({
   },
   drawerOpen: {
     width: drawerWidth,
+    background: "#546EFF",
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,

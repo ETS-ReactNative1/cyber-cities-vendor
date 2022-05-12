@@ -72,8 +72,8 @@ const fetchProducts = async () => {
         product.push(singleProduct)
         
       })
-      const reverse = product.reverse() 
-      setProducts(reverse)
+      // const reverse = product.reverse() 
+      setProducts(product)
   setLoading(false)
       
 
@@ -101,10 +101,10 @@ const fetchProducts = async () => {
     onRowsDelete:(e)=>{
       setLoading(true)
       console.log(e.data)
+
       const filtered = products.filter((pro,index)=>{
         return pro[6] == e.data[0].index
       })
-    
     let formData = new FormData();
     formData.append('id',filtered[0][0])
     axios({

@@ -1,11 +1,3 @@
-// import React from 'react'
-
-// function AddProduct() {
-//   return (
-//     <div>AddProduct</div>
-//   )
-// }
-
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { Form, Field } from "react-final-form";

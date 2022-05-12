@@ -1,71 +1,38 @@
-import React, { useEffect, useState } from "react";
-import { Button, CircularProgress, Grid, TextField, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
-import MUIDataTable from "mui-datatables";
-import { useHistory } from "react-router-dom";
-
+import { Button, CircularProgress, Grid, TextField } from "@material-ui/core";
+import axios from "axios";
+import React, { useState } from "react";
+import Swal from "sweetalert2";
 // components
 import PageTitle from "../../components/PageTitle/PageTitle";
-import Widget from "../../components/Widget/Widget";
-import Table from "../dashboard/components/Table/Table";
-
-// data
-import mock from "../dashboard/mock";
-import axios from "axios";
 import useStyles from "../login/styles";
 
-const datatableData = [
-  ["Joe James", "Example Inc.", "Yonkers", "3400"],
-  ["John Walsh", "Example Inc.", "Hartford", "3400"],
-  ["Bob Herm", "Example Inc.", "Tampa", "3400"],
-  ["James Houston", "Example Inc.", "Dallas", "3400"],
-  ["Prabhakar Linwood", "Example Inc.", "Hartford", "3400"],
-  ["Kaui Ignace", "Example Inc.", "Yonkers", "3400"],
-  ["Esperanza Susanne", "Example Inc.", "Hartford", "3400"],
-  ["Christian Birgitte", "Example Inc.", "Tampa", "3400"],
-  ["Meral Elias", "Example Inc.", "Hartford", "3400"],
-  ["Deep Pau", "Example Inc.", "Yonkers", "3400"],
-  ["Sebastiana Hani", "Example Inc.", "Dallas", "3400"],
-  ["Marciano Oihana", "Example Inc.", "Yonkers", "3400"],
-  ["Brigid Ankur", "Example Inc.", "Dallas", "3400"],
-  ["Anna Siranush", "Example Inc.", "Yonkers", "3400"],
-  ["Avram Sylva", "Example Inc.", "Hartford", "3400"],
-  ["Serafima Babatunde", "Example Inc.", "Tampa", "3400"],
-  ["Gaston Festus", "Example Inc.", "Tampa", "3400"],
-];
 
-// const useStyles = makeStyles((theme) => ({
-//   tableOverflow: {
-//     overflow: "auto",
-//   },
-// }));
 
 export default function Profile() {
 
   const user = JSON.parse(localStorage.getItem("user"));
+  debugger;
   const classes = useStyles();
-  const [products,setProducts] = useState([])
-  const [loading,setLoading] = useState(false)
-  const history = useHistory();
   var [isLoading, setIsLoading] = useState(false);
-  var [error, setError] = useState(null);
-  var [activeTabId, setActiveTabId] = useState(0);
-  var [nameValue, setNameValue] = useState(user[0].name);
-  var [company, setCompany] = useState(user[0].company);
-  var [phone, setPhone] = useState(user[0].phone);
-  var [city, setCity] = useState(user[0].city);
-  var [state, setState] = useState(user[0].state);
-  var [address, setAddress] = useState(user[0].address);
-  var [loginValue, setLoginValue] = useState(user[0].email);
+  var [nameValue, setNameValue] = useState(user[0]?.name);
+  var [company, setCompany] = useState(user[0]?.company);
+  var [phone, setPhone] = useState(user[0]?.phone);
+  var [city, setCity] = useState(user[0]?.city);
+  var [state, setState] = useState(user[0]?.state);
+  var [address, setAddress] = useState(user[0]?.address);
+  var [loginValue, setLoginValue] = useState(user[0]?.email);
   const token = localStorage.getItem("id_token");
 
-  debugger  
-  
+  var headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
 
 
   const handleSubmit = async () => {
+    setIsLoading(true);
     let formData = new FormData();
-    formData.append("email", loginValue);
+    // formData.append("email", loginValue);
     formData.append("name", nameValue);
     formData.append("company", company);
     formData.append("phone", phone);
@@ -73,67 +40,66 @@ export default function Profile() {
     formData.append("state", state);
     formData.append("address", address);
 
-    // axios({
-    //   method: "POST",
-    //   url: `https://cybercitiesapi.developer-um.xyz/api/seller/register`,
-    //   data: formData,
-    // })
-    //   .then((response) => {
-    //     // console.log("response", response)
-    //     const Data = response.data;
-    //     if (response?.data?.Success == 200) {
-    //       console.log(response);
-    //       Swal.fire({
-    //         title: "Success",
-    //         text: "Successfully Registered",
-    //         icon: "success",
-    //       });
-    //       
-    //     } 
-    //     if(Data?.errors?.email){
-    //       Swal.fire({
-    //         title: "Error",
-    //         text: "Email already exists",
-    //         icon: "error",
-    //       });
-    //     }
-    //     else {
-    //       
-    //       Swal.fire({
-    //         title: "Error",
-    //         text: "Something went wrong",
-    //         icon: "error",
-    //       });
-    //       console.log("error");
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     
-    //     Swal.fire({
-    //       title: "Error",
-    //       text: "Something went wrong",
-    //       icon: "error",
-    //     });
-    //     console.log(error);
-    //   });
+     
+
+
+    axios({
+      method: "POST",
+      url: `https://cybercitiesapi.developer-um.xyz/api/update/seller`,
+      headers: headers,
+      data: formData,
+    })
+      .then((response) => {
+        // console.log("response", response)
+        const Data = response.data;
+        debugger
+        if (Data.Success) {
+          console.log(response);
+          localStorage.setItem("user", JSON.stringify([Data.seller]));
+           setIsLoading(false);
+          return( Swal.fire({
+            title: "Success",
+            text: Data.Success,
+            icon: "success",
+          }))
+          
+        } 
+    
+        else {
+         setIsLoading(false);
+          
+          Swal.fire({
+            title: "Error",
+            text: "Something went wrong",
+            icon: "error",
+          });
+          console.log("error");
+        }
+      })
+      .catch((error) => {
+        setIsLoading(false);
+
+        debugger
+        Swal.fire({
+          title: "Error",
+          text: "Something went wrong",
+          icon: "error",
+        });
+        console.log(error);
+      });
   }
 
-  
-  var headers = {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  };
+ 
   
 
 
   return (
-    <>
-     <div style={{display:'flex',alignItems:'center',flexDirection:'row',justifyContent:'space-between',}}>
+    <div style={{alignSelf:'center',alignItems:'center',margin: 'auto',width: '60%'}}>
+     <div style={{ display:'flex',alignItems:'center',flexDirection:'row',justifyContent:'space-between',}}>
       <PageTitle title="Profile" />
       </div>
       <Grid container spacing={4}>
-     {loading ? <CircularProgress size={26} className={classes.loginLoader} style ={{align:'center',justifyContent:'center',alignContent:'center'}} />
-     :  
+    
       <Grid>
      {/* <Typography variant="h1" className={classes.greeting}>
        Welcome!
@@ -157,6 +123,7 @@ export default function Profile() {
 
      <TextField
        id="email"
+       disabled={true}
        InputProps={{
          classes: {
            underline: classes.textFieldUnderline,
@@ -274,7 +241,7 @@ export default function Profile() {
        ) : (
          <Button
            onClick={() =>
-           console.log('a')
+            handleSubmit()
            }
            disabled={
              loginValue.length === 0 ||
@@ -310,18 +277,9 @@ export default function Profile() {
        <img src={google} alt="google" className={classes.googleIcon} />
        &nbsp;Sign in with Google
      </Button> */}
-   </Grid>}
-        {/* <Grid item xs={12}>
-          <Widget
-            title="Material-UI Table"
-            upperTitle
-            noBodyPadding
-            bodyClass={classes.tableOverflow}
-          >
-            <Table data={mock.table} />
-          </Widget>
-        </Grid> */}
+   </Grid>
+
       </Grid>
-    </>
+    </div>
   );
 }
