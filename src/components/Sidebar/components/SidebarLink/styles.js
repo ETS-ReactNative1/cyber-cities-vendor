@@ -35,12 +35,12 @@ export default makeStyles(theme => ({
   },
   linkText: {
     padding: 0,
-    color: '#051572',
+    color: '#ECECEE',
     transition: theme.transitions.create(["opacity", "color"]),
     fontSize: 16,
   },
   linkTextActive: {
-    color: "#475DDC",
+    color: "#ECECEE",
   },
   linkTextHidden: {
     opacity: 0,

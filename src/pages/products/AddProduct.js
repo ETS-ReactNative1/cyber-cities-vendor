@@ -437,7 +437,7 @@ function AddProduct() {
                       variant="contained"
                       color="primary"
                       type="submit"
-                      disabled={submitting}
+                      disabled={images.length === 0 || category.length === 0 || subCategory.length === 0}
                     >
                       Submit
                     </Button>

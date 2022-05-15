@@ -53,6 +53,7 @@ function Login(props) {
     formData.append("city", city);
     formData.append("state", state);
     formData.append("address", address);
+debugger
     axios({
       method: "POST",
       url: `https://cybercitiesapi.developer-um.xyz/api/seller/register`,
@@ -60,10 +61,11 @@ function Login(props) {
     })
       .then((response) => {
         // console.log("response", response)
+        debugger
         const Data = response.data;
-        if (response?.data?.Success == 200) {
+        if (response?.data?.Success) {
           console.log(response);
-          Swal.fire({
+         return Swal.fire({
             title: "Success",
             text: "Successfully Registered",
             icon: "success",
@@ -71,7 +73,7 @@ function Login(props) {
           
         } 
         if(Data?.errors?.email){
-          Swal.fire({
+         return Swal.fire({
             title: "Error",
             text: "Email already exists",
             icon: "error",

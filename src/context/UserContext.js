@@ -1,5 +1,6 @@
 import axios from "axios";
 import React from "react";
+import Swal from "sweetalert2";
 
 var UserStateContext = React.createContext();
 var UserDispatchContext = React.createContext();
@@ -63,6 +64,7 @@ function loginUser(dispatch, login, password, history, setIsLoading, setError) {
                 url: `https://cybercitiesapi.developer-um.xyz/api/seller/login`,
                 data: formdata,
             }).then((response) => {
+              debugger
                 // console.log("response", response)
                 const Data = response.data
                 if (response.status == 200) {
@@ -71,22 +73,32 @@ function loginUser(dispatch, login, password, history, setIsLoading, setError) {
       setError(null)
       setIsLoading(false)
       dispatch({ type: 'LOGIN_SUCCESS' })
-
+      Swal.fire({
+        title: "Success",
+        text: "Login Successfull",
+        icon: "success",
+    });
       history.push('/app/dashboard')
-                    // Swal.fire({
-                    //     title: "Success",
-                    //     text: "Login Successfull",
-                    //     icon: "success",
-                    // });
-                    // localStorage.setItem("Usertoken",Data?.token)
-                    // localStorage.setItem("User",JSON.stringify(Data?.user))
-                    // history.push("/dashbaord")
+                    
                 }
                 else {
                   dispatch({ type: "LOGIN_FAILURE" });
+                  setIsLoading(false)
+                  Swal.fire({
+                    title: "Opps",
+                    text: "Wrong Credentials!",
+                    icon: "error",
+                });
                   setError(true);
                   setIsLoading(false);
                 }
+              }).catch((error)=>{
+                setIsLoading(false)
+                Swal.fire({
+                  title: "Error",
+                  text: "Use Not Exist  ",
+                  icon: "error",
+              });
               })
   
 }
