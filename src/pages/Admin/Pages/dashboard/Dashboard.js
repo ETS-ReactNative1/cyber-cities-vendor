@@ -15,7 +15,6 @@ import {
   LineChart,
   Line,
   Area,
-    CartesianGrid, 
   PieChart,
   Pie,
   Cell,
@@ -28,35 +27,32 @@ import useStyles from "./styles";
 
 // components
 import mock from "./mock";
-import Widget from "../../components/Widget";
-import PageTitle from "../../components/PageTitle";
-import { Typography } from "../../components/Wrappers";
-import Dot from "../../components/Sidebar/components/Dot";
-import Table from "./components/Table/Table";
-import BigStat from "./components/BigStat/BigStat";
+import Widget from "../../../../components/Widget";
+import PageTitle from "../../../../components/PageTitle";
+import { Typography } from "../../../../components/Wrappers";
+import Dot from "../../../../components/Sidebar/components/Dot";
 import axios from "axios";
 import Swal from "sweetalert2";
 
-// const mainChartData = getMainChartData();
+const mainChartData = getMainChartData();
 
 
 
 
+const PieChartData = [
+  { name: "Acer Laptop", value: 400, color: "primary" },
+  { name: "SSD", value: 300, color: "secondary" },
+  { name: "Apple Macbook", value: 300, color: "warning" },
+  { name: "Power Cables", value: 200, color: "success" },
+];
 
-
-export default function Dashboard(props) {
-
-  const access = JSON.parse(localStorage.getItem('token'));
-  
-let token =  access?.token
-  // useEffect(() => {
-  //   token = access?.token
-  // } , [access?.token])
-
-  var headers = {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  };
+const PieChartData2 = [
+  { name: "John", value: 400, color: "primary" },
+  { name: "Smith", value: 300, color: "secondary" },
+  { name: "Snow", value: 300, color: "warning" },
+  { name: "Petter", value: 200, color: "success" },
+];
+export default function AdminDashboard(props) {
   var classes = useStyles();
   var theme = useTheme();
   const [totalSales, setTotalSales] = useState(0);
@@ -64,127 +60,118 @@ let token =  access?.token
   const [lastWeekSales, setLastWeekySales] = useState(0);
   const [lastMonthSales, setLastMonthSales] = useState(0);
   const [productCount, setProductCount] = useState(0);
-  const [topCategory, setTopCategory] = useState(0);
-  const [topProduct, setTopProduct] = useState([]);
+  const [topCategory, setTopCategory] = useState([]);
   const [topCustomer, setTopCustomer] = useState([]);
-  const [mainChartData, setMainChartData] = useState([]);
+  const access = JSON.parse(localStorage.getItem('token'));
+  const token = access?.token
+    
+  var headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
+  
 
   useEffect(() => {
     axios({
       method: 'GET',
-      url: `https://cybercitiesapi.developer-um.xyz/api/seller-totalsales-count`,
+      url: `https://cybercitiesapi.developer-um.xyz/api/admin-totalsales-count`,
       headers: headers,
   }).then((response) => {
       // console.log("response", response)
       const Data = response.data
       if (Data.status == "success") {
         let product = []
-        setTotalSales(Data.totalsales_count[0].net_amount)
-        setTodaySales(Data.todaysales_count[0].net_amount)
-        setLastWeekySales(Data.lastweeksales_count[0].net_amount)
-        setLastMonthSales(Data.lastmonthsales_count[0].net_amount)
+        setTotalSales(Data.totalsales_count[0].total)
+        setTodaySales(Data.todaysales_count[0].total)
+        setLastWeekySales(Data.lastweeksales_count[0].total)
+        setLastMonthSales(Data.lastmonthsales_count[0].total)
       }
      
     }).catch((error)=>{
-      
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
-        text: error?.message,
+        text: error.message,
       })
     })
 
     axios({
       method: 'GET',
-      url: `https://cybercitiesapi.developer-um.xyz/api/seller-products-count`,
+      url: `https://cybercitiesapi.developer-um.xyz/api/admin-vendor-sales`,
       headers: headers,
   }).then((response) => {
       const Data = response.data
-      if (Data.status == "success") {
-      setProductCount(Data.products_count)
-      setTopCategory(Data.category_count)
-      }
-     
-
-    }).catch((error)=>{
-      
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: error?.message,
-      })
-    })
-  
-    axios({
-      method: 'GET',
-      url: `https://cybercitiesapi.developer-um.xyz/api/seller-top-products`,
-      headers: headers,
-  }).then((response) => {
-      const Data = response.data
-      if (Data.status == "success") {
+      if (Data.admin_vendor_sales.length > 0) {
         let product = []
         const color = ["primary", "secondary", "warning", "success"];
-        
         for(let i=0;i<4;i++){
-          product.push({name:Data.seller_top_products[i].name,value:Data.seller_top_products[i].orders_count,color:color[i]})
+          product.push({name:Data.admin_vendor_sales[i]?.seller?.name,value:Data.admin_vendor_sales[i]?.total_amount,color:color[i]})
         }
-      setTopProduct(product)
+      setTopCategory(product)
       }
    
     }).catch((error)=>{
-      
-
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
-        text: error?.message,
+        text: error.message,
       })
     })
 
+    
     axios({
       method: 'GET',
-      url: `https://cybercitiesapi.developer-um.xyz/api/seller-top-costomers`,
+      url: `https://cybercitiesapi.developer-um.xyz/api/admin-customer-count`,
       headers: headers,
   }).then((response) => {
       const Data = response.data
-      
-      if (Data.status == "success") {
-        let customer = []
+      if (Data.top_customers.length > 0) {
+        let product = []
         const color = ["primary", "secondary", "warning", "success"];
-        for(let i=0;i<Data.seller_top_customers.length;i++){
-          customer.push({name:Data.seller_top_customers[i].users.name,value:Data.seller_top_customers[i].total_amount,color:color[i]})
+        for(let i=0;i<4;i++){
+          product.push({name:Data.top_customers[i]?.users?.name,value:Data.top_customers[i]?.total_amount,color:color[i]})
         }
-        setTopCustomer(customer)
+      setTopCustomer(product)
       }
+   
     }).catch((error)=>{
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
-        text: error?.message,
-      })
-    })
-
-
-    axios({
-      method: 'GET',
-      url: `https://cybercitiesapi.developer-um.xyz/api/seller-line-chart`,
-      headers: headers,
-  }).then((response) => {
-      const Data = response.data
-      if (Data.lineChart) {
-        setMainChartData(Data.lineChart)
-     
-      }
-    }).catch((error)=>{
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: error?.message,
+        text: error.message,
       })
     })
   
-  
-  
+  //   axios({
+  //     method: 'GET',
+  //     url: `https://cybercitiesapi.developer-um.xyz/api/seller-top-products`,
+  //     headers: headers,
+  // }).then((response) => {
+  //     const Data = response.data
+      
+  //     if (Data.status == "success") {
+  //       let product = []
+  //       const color = ["primary", "secondary", "warning", "success"];
+  //       for(let i=0;i<4;i++){
+  //         product.push({name:Data.seller_top_products[i]?.name,value:Data.seller_top_products[i]?.orders_count,color:color[i]})
+  //       }
+  //     setTopProduct(product)
+  //     }
+  //     else {
+  //       Swal.fire({
+  //         icon: 'error',
+  //         title: 'Oops...',
+  //         text: error.message,
+  //       })
+  //     }
+  //   }).catch((error)=>{
+      
+  //     Swal.fire({
+  //       icon: 'error',
+  //       title: 'Oops...',
+  //       text: error.message,
+  //     })
+  //   })
   
 
   
@@ -192,7 +179,7 @@ let token =  access?.token
 },[])
 
   
-  // local
+  
 
   return (
     <>
@@ -206,7 +193,7 @@ let token =  access?.token
     // </Button>}
      />
       <Grid container spacing={4}>
-        <Grid item lg={3} md={4} sm={6} xs={12}>
+        <Grid item lg={4} md={4} sm={6} xs={12}>
           <Widget
             title="Total Sales"
             upperTitle
@@ -270,99 +257,44 @@ let token =  access?.token
             </Grid>
           </Widget>
         </Grid>
-        <Grid item lg={3} md={8} sm={6} xs={12}>
-          <Widget
-            title="All Products"
-            upperTitle
-            disableWidgetMenu = {true}
-            className={classes.card}
-            bodyClass={classes.fullHeightBody}
-          >
-            <Grid item xs={6}>
-              <Typography size="xl" weight="medium" noWrap>
-                {productCount}
-              </Typography>
-                </Grid>
-            <div className={classes.performanceLegendWrapper}>
-              <div className={classes.legendElement}>
-                <Dot color="warning" />
-                <Typography
-                  color="text"
-                  colorBrightness="secondary"
-                  className={classes.legendElementText}
-                >
-                {topCategory[0]?.categories.name}-{topCategory[0]?.name}
-                </Typography>
-              </div>
-              <div className={classes.legendElement}>
-                <Dot color="primary" />
-                <Typography
-                  color="text"
-                  colorBrightness="secondary"
-                  className={classes.legendElementText}
-                >
-                    {topCategory[1]?.categories.name}-{topCategory[1]?.name}
-                </Typography>
-              </div>
-              <div className={classes.legendElement}>
-                <Dot color="primary" />
-                <Typography
-                  color="text"
-                  colorBrightness="secondary"
-                  className={classes.legendElementText}
-                >
-                    {topCategory[2]?.categories.name}-{topCategory[2]?.name}
-                </Typography>
-              </div>
-            </div>
-            <div className={classes.progressSection}>
-              <Typography
-                size="md"
-                color="text"
-                colorBrightness="secondary"
-                className={classes.progressSectionTitle}
-              >
-                   {topCategory[0]?.categories.name}-{topCategory[0]?.name}
-              </Typography>
-              <LinearProgress
-                variant="determinate"
-                value={topCategory[0]?.products_count}
-                classes={{ barColorPrimary: classes.progressBarPrimary }}
-                className={classes.progress}
-              />
-            </div>
-            <div>
-              <Typography
-                size="md"
-                color="text"
-                colorBrightness="secondary"
-                className={classes.progressSectionTitle}
-              >
-                   {topCategory[1]?.categories.name}-{topCategory[1]?.name}
-              </Typography>
-              <LinearProgress
-                variant="determinate"
-                value={topCategory[1]?.products_count}
-                classes={{ barColorPrimary: classes.progressBarWarning }}
-                className={classes.progress}
-              />
-            </div>
-            <div>
-              <Typography
-                size="md"
-                color="text"
-                colorBrightness="secondary"
-                className={classes.progressSectionTitle}
-              >
-                  {topCategory[2]?.categories.name}-{topCategory[2]?.name}
-              </Typography>
-              <LinearProgress
-                variant="determinate"
-                value={topCategory[2]?.products_count}
-                classes={{ barColorPrimary: classes.progressBarWarning }}
-                className={classes.progress}
-              />
-            </div>
+        <Grid item lg={4} md={4} sm={6} xs={12}>
+          <Widget title="Top Customers (Sales)" disableWidgetMenu = {true} upperTitle className={classes.card}>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <ResponsiveContainer width="100%" height={144}>
+                  <PieChart>
+                    <Pie
+                      data={topCustomer}
+                      innerRadius={30}
+                      outerRadius={40}
+                      dataKey="value"
+                    >
+                      {topCustomer.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={theme.palette[entry.color].main}
+                        />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+              </Grid>
+              <Grid item xs={6}>
+                <div className={classes.pieChartLegendWrapper}>
+                  {topCustomer.map(({ name, value, color }, index) => (
+                    <div key={color} className={classes.legendItemContainer}>
+                      <Dot color={color} />
+                      <Typography style={{ whiteSpace: "nowrap", fontSize: 12 }} >
+                        &nbsp;{name}&nbsp;
+                      </Typography>
+                      <Typography color="text" colorBrightness="secondary">
+                        &nbsp; $ {value}
+                      </Typography>
+                    </div>
+                  ))}
+                </div>
+              </Grid>
+            </Grid>
           </Widget>
         </Grid>
         {/* <Grid item lg={3} md={8} sm={6} xs={12}>
@@ -446,17 +378,17 @@ let token =  access?.token
             </div>
           </Widget>
         </Grid> */}
-      {topProduct.length >0 &&
+      {/* {topProduct.length >0 &&
         <Grid item lg={3} md={4} sm={6} xs={12}>
           <Widget title="Top Products" disableWidgetMenu = {true} upperTitle className={classes.card}>
-            <Grid container spacing={2} style={{display:'block',alignItems:'center',justifyContent:'center'}}>
-              <Grid item xs={12}>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
                 <ResponsiveContainer width="100%" height={144}>
                   <PieChart>
                     <Pie
                       data={topProduct}
-                      innerRadius={40}
-                      outerRadius={70}
+                      innerRadius={30}
+                      outerRadius={40}
                       dataKey="value"
                     >
                       {topProduct.map((entry, index) => (
@@ -469,7 +401,7 @@ let token =  access?.token
                   </PieChart>
                 </ResponsiveContainer>
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={6}>
                 <div className={classes.pieChartLegendWrapper}>
                   {topProduct.map(({ name, value, color }, index) => (
                     <div key={color} className={classes.legendItemContainer}>
@@ -486,20 +418,20 @@ let token =  access?.token
               </Grid>
             </Grid>
           </Widget>
-        </Grid>}
-        <Grid item lg={3} md={4} sm={6} xs={12}>
-          <Widget title="Top Customers" disableWidgetMenu = {true} upperTitle className={classes.card}>
-            <Grid container spacing={2} style={{display:'block',alignItems:'center',justifyContent:'center'}}>
-              <Grid item xs={12}>
+        </Grid>} */}
+        <Grid item lg={4} md={4} sm={6} xs={12}>
+          <Widget title="Top Vendor (Sales)" disableWidgetMenu = {true} upperTitle className={classes.card}>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
                 <ResponsiveContainer width="100%" height={144}>
                   <PieChart>
                     <Pie
-                      data={topCustomer}
-                      innerRadius={40}
-                      outerRadius={70}
+                      data={topCategory}
+                      innerRadius={30}
+                      outerRadius={40}
                       dataKey="value"
                     >
-                      {topCustomer.map((entry, index) => (
+                      {topCategory.map((entry, index) => (
                         <Cell
                           key={`cell-${index}`}
                           fill={theme.palette[entry.color].main}
@@ -509,9 +441,9 @@ let token =  access?.token
                   </PieChart>
                 </ResponsiveContainer>
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={6}>
                 <div className={classes.pieChartLegendWrapper}>
-                  {topCustomer.map(({ name, value, color }, index) => (
+                  {topCategory.map(({ name, value, color }, index) => (
                     <div key={color} className={classes.legendItemContainer}>
                       <Dot color={color} />
                       <Typography style={{ whiteSpace: "nowrap", fontSize: 12 }} >
@@ -527,7 +459,7 @@ let token =  access?.token
             </Grid>
           </Widget>
         </Grid>
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <Widget
           disableWidgetMenu = {true}
             bodyClass={classes.mainChartBody}
@@ -547,19 +479,19 @@ let token =  access?.token
                       This Month
                     </Typography>
                   </div>
-                  {/* <div className={classes.mainChartHeaderLabel}>
+                  <div className={classes.mainChartHeaderLabel}>
                     <Dot color="primary" />
                     <Typography className={classes.mainChartLegentElement}>
                       Last Month
                     </Typography>
-                  </div> */}
+                  </div>
                   {/* <div className={classes.mainChartHeaderLabel}>
                     <Dot color="secondary" />
                     <Typography className={classes.mainChartLegentElement}>
                       Desktop
                     </Typography>
                   </div> */}
-                </div>
+                {/* </div> */}
                 {/* <Select
                   value={mainChartState}
                   onChange={e => setMainChartState(e.target.value)}
@@ -578,25 +510,11 @@ let token =  access?.token
                   <MenuItem value="weekly">Weekly</MenuItem>
                   <MenuItem value="monthly">Monthly</MenuItem>
                 </Select> */}
-              </div>
-            }
-          >
-            <ResponsiveContainer width="100%" minWidth={500} height={350}>
-            <LineChart  data={mainChartData}>
-    <Line
-    Line
-    type="natural"
-    stroke={theme.palette.primary.main}
-    strokeWidth={2}
-    dot={false}
-    activeDot={false}
-    
-   dataKey="total_amount"  />
-    <CartesianGrid stroke="#ccc" />
-    <XAxis dataKey="date" />
-    <YAxis />
-  </LineChart>
-              {/* <ComposedChart
+              {/* </div> */}
+            {/* }
+          > */}
+            {/* <ResponsiveContainer width="100%" minWidth={500} height={350}>
+              <ComposedChart
                 margin={{ top: 0, right: -15, left: -15, bottom: 0 }}
                 data={mainChartData}
               >
@@ -638,10 +556,10 @@ let token =  access?.token
                     fill: theme.palette.warning.main,
                   }}
                 />
-              </ComposedChart> */}
+              </ComposedChart>
             </ResponsiveContainer>
-          </Widget>
-        </Grid>
+          </Widget> */}
+        {/* </Grid>  */}
         {/* {mock.bigStat.map(stat => (
           <Grid item md={4} sm={6} xs={12} key={stat.product}>
             <BigStat {...stat} />
@@ -689,11 +607,12 @@ function getMainChartData() {
   var tablet = getRandomData(31, 3500, 6500, 7500, 1000);
   var desktop = getRandomData(31, 1500, 7500, 7500, 1500);
   var mobile = getRandomData(31, 1500, 7500, 7500, 1500);
+  
   for (let i = 0; i < tablet.length; i++) {
     resultArray.push({
       tablet: tablet[i].value,
-      // desktop: desktop[i].value,
-      // mobile: mobile[i].value,
+      desktop: desktop[i].value,
+      mobile: mobile[i].value,
     });
   }
 

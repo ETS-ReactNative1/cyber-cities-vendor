@@ -11,7 +11,7 @@ import useStyles from "../login/styles";
 export default function Profile() {
 
   const user = JSON.parse(localStorage.getItem("user"));
-  debugger;
+  ;
   const classes = useStyles();
   var [isLoading, setIsLoading] = useState(false);
   var [nameValue, setNameValue] = useState(user[0]?.name);
@@ -21,7 +21,7 @@ export default function Profile() {
   var [state, setState] = useState(user[0]?.state);
   var [address, setAddress] = useState(user[0]?.address);
   var [loginValue, setLoginValue] = useState(user[0]?.email);
-  const token = localStorage.getItem("id_token");
+  const {token} = JSON.parse(localStorage.getItem('token'));
 
   var headers = {
     "Content-Type": "application/json",
@@ -52,7 +52,7 @@ export default function Profile() {
       .then((response) => {
         // console.log("response", response)
         const Data = response.data;
-        debugger
+        
         if (Data.Success) {
           console.log(response);
           localStorage.setItem("user", JSON.stringify([Data.seller]));
@@ -79,7 +79,7 @@ export default function Profile() {
       .catch((error) => {
         setIsLoading(false);
 
-        debugger
+        
         Swal.fire({
           title: "Error",
           text: "Something went wrong",

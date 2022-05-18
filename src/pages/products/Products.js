@@ -46,7 +46,7 @@ export default function Tables() {
   const [products,setProducts] = useState([])
   const [loading,setLoading] = useState(false)
   const history = useHistory();
-  const token = localStorage.getItem("id_token");
+  const {token} = JSON.parse(localStorage.getItem('token'));
 
   
   var headers = {

@@ -55,7 +55,7 @@ function EditProduct() {
   const [imageUrl, setImageUrl] = useState([]);
   const [id, setId] = useState(null);
 
-  const token = localStorage.getItem("id_token");
+  const {token} = JSON.parse(localStorage.getItem('token'));
 
   var headers = {
     "Content-Type": "application/json",
@@ -80,9 +80,9 @@ function EditProduct() {
       .then((response) => {
         // console.log("response", response)
         const Data = response.data;
-      debugger
+      
         if (Data.Images) {
-          debugger
+          
           setImages(Data.Images)
       let tempImg = []
       Data.Images.map((img,index)=>{
@@ -98,7 +98,7 @@ function EditProduct() {
         }
       })
       .catch((error) => {
-        debugger
+        
         console.log(error);
       });
   }
@@ -121,7 +121,7 @@ let formData = new FormData();
       .then((response) => {
         // console.log("response", response)
         const Data = response.data;
-      debugger
+      
         if (Data?.Successfull) {
           console.log(response);
           getImages()
@@ -131,7 +131,7 @@ let formData = new FormData();
         }
       })
       .catch((error) => {
-        debugger
+        
         console.log(error);
       });
     // const obj ={...e.target.files}
@@ -229,7 +229,7 @@ let formData = new FormData();
     // formdata.append("product_selected_qty",values.target[7].value );
     formdata.append("product_status", values.target[7].value);
     formdata.append("product_stock", values.target[7].value);
-    debugger
+    
     // const res = await axios.post('https://cybercitiesapi.developer-um.xyz/api/add/product',formdata,{headers:headers})
     axios({
       method: "POST",
@@ -240,7 +240,7 @@ let formData = new FormData();
       .then((response) => {
         // console.log("response", response)
         const Data = response.data;
-        debugger
+        
         if (Data.Successfull) {
           console.log(response);
           setLoading(false);
@@ -256,7 +256,7 @@ let formData = new FormData();
         }
       })
       .catch((error) => {
-        debugger
+        
         setLoading(false);
         console.log(error);
       });

@@ -53,7 +53,7 @@ function Login(props) {
     formData.append("city", city);
     formData.append("state", state);
     formData.append("address", address);
-debugger
+
     axios({
       method: "POST",
       url: `https://cybercitiesapi.developer-um.xyz/api/seller/register`,
@@ -61,7 +61,7 @@ debugger
     })
       .then((response) => {
         // console.log("response", response)
-        debugger
+        
         const Data = response.data;
         if (response?.data?.Success) {
           console.log(response);

@@ -1,0 +1,6 @@
+{
+  "name": "AdminLogin",
+  "version": "0.0.0",
+  "main": "Login.js",
+  "private": true
+}

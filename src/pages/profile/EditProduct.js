@@ -51,7 +51,7 @@ function EditProduct() {
   const [imageUrl, setImageUrl] = useState([]);
   const [id, setId] = useState(null);
 
-  const token = localStorage.getItem("id_token");
+  const {token} = JSON.parse(localStorage.getItem('token'));
 
   var headers = {
     "Content-Type": "application/json",

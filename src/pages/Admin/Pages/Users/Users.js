@@ -5,34 +5,13 @@ import MUIDataTable from "mui-datatables";
 import { useHistory } from "react-router-dom";
 
 // components
-import PageTitle from "../../components/PageTitle/PageTitle";
-import Widget from "../../components/Widget/Widget";
-import Table from "../dashboard/components/Table/Table";
+import PageTitle from "../../../../components/PageTitle/PageTitle";
 
 // data
 import mock from "../dashboard/mock";
 import axios from "axios";
 import Swal from "sweetalert2";
 
-const datatableData = [
-  ["Joe James", "Example Inc.", "Yonkers", "3400"],
-  ["John Walsh", "Example Inc.", "Hartford", "3400"],
-  ["Bob Herm", "Example Inc.", "Tampa", "3400"],
-  ["James Houston", "Example Inc.", "Dallas", "3400"],
-  ["Prabhakar Linwood", "Example Inc.", "Hartford", "3400"],
-  ["Kaui Ignace", "Example Inc.", "Yonkers", "3400"],
-  ["Esperanza Susanne", "Example Inc.", "Hartford", "3400"],
-  ["Christian Birgitte", "Example Inc.", "Tampa", "3400"],
-  ["Meral Elias", "Example Inc.", "Hartford", "3400"],
-  ["Deep Pau", "Example Inc.", "Yonkers", "3400"],
-  ["Sebastiana Hani", "Example Inc.", "Dallas", "3400"],
-  ["Marciano Oihana", "Example Inc.", "Yonkers", "3400"],
-  ["Brigid Ankur", "Example Inc.", "Dallas", "3400"],
-  ["Anna Siranush", "Example Inc.", "Yonkers", "3400"],
-  ["Avram Sylva", "Example Inc.", "Hartford", "3400"],
-  ["Serafima Babatunde", "Example Inc.", "Tampa", "3400"],
-  ["Gaston Festus", "Example Inc.", "Tampa", "3400"],
-];
 
 const useStyles = makeStyles((theme) => ({
   tableOverflow: {
@@ -40,11 +19,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Orders() {
+export default function Users() {
 
 
   const classes = useStyles();
-  const [orders,setOrders] = useState([])
+  const [users,setUsers] = useState([])
   const [loading,setLoading] = useState(false)
   const history = useHistory();
   const {token} = JSON.parse(localStorage.getItem('token'));
@@ -58,30 +37,26 @@ export default function Orders() {
 const fetchProducts = async () => {
   axios({
     method: 'GET',
-    url: `https://cybercitiesapi.developer-um.xyz/api/seller-orders`,
+    url: `https://cybercitiesapi.developer-um.xyz/api/admin/user`,
     headers,headers
 }).then((response) => {
     // console.log("response", response)
+    
     const Data = response.data
     
-    if (Data.orders) {
-      let product = []
-      Data.orders.map((pro,index)=>{
-        let singleProduct = [pro?.id,pro?.customer_name,pro?.order_date,pro.gross_amount,pro.net_amount]
+    if (Data.user) {
+      let user = []
+      Data.user.map((pro,index)=>{
+        let singleProduct = [pro?.id,pro?.name,pro?.email,pro.state,pro.phone,index]
         
-        product.push(singleProduct)
+        user.push(singleProduct)
         
       })
-      const reverse = product.reverse() 
-      setOrders(reverse)
+      // const reverse = user.reverse() 
+      setUsers(user)
   setLoading(false)
       
 
-    }
-    else {
-      setLoading(false)
-
-      console.log("error")
     }
   }).catch((error)=>{
     
@@ -99,13 +74,33 @@ const fetchProducts = async () => {
 
   const options = {
     onRowsDelete:(e)=>{
-      Swal.fire({
-        title: "Error!",
-        text: "Order can't be deleted",
-        icon: "error",
-      });
+      setLoading(true)
+        
+      const filtered = users.filter((pro,index)=>{
+        return pro[5] == e.data[0].index
+      })
+    // let formData = new FormData();
+    // formData.append('id',filtered[0][0])
+    
+    axios({
+      method: 'GET',
+      url: `https://cybercitiesapi.developer-um.xyz/api/admin/user/delete/${filtered[0][0]}`,
+      headers: headers,
+  }).then((response) => {
+      // console.log("response", response)
       
-      setOrders(orders)
+      setUsers()
+      const Data = response.data
+      if (Data.status == "successfully deleted") {
+      fetchProducts()
+    setLoading(false)
+      }
+     
+    }).catch((error)=>{
+      
+      console.log(error)
+      setLoading(false)
+    })
   }, 
 //   onRowClick: (event, rowData) => {
     
@@ -127,7 +122,7 @@ const fetchProducts = async () => {
 
     <>
      <div style={{display:'flex',alignItems:'center',flexDirection:'row',justifyContent:'space-between',}}>
-      <PageTitle title="Orders" />
+      <PageTitle title="Users" />
      
         {/* <Button
           onClick={() => {
@@ -144,9 +139,9 @@ const fetchProducts = async () => {
      {loading ? <CircularProgress size={26} className={classes.loginLoader} style ={{align:'center',justifyContent:'center',alignContent:'center'}} />
      :   <Grid item xs={12}>
           <MUIDataTable
-            title="Order List"
-            data={orders}
-            columns={["Order Id","Customer Name","Order Date",  "Gross Amount", "Net Amount"]}
+            title="User List"
+            data={users}
+            columns={["Id","Name","Email", "State", "Phone"]}
             options={options}
           />
         </Grid>}

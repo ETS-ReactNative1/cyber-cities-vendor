@@ -38,16 +38,24 @@ import { useLayoutState } from "../../context/LayoutContext";
 import AddProduct from "../../pages/products/AddProduct";
 import EditProduct from "../../pages/products/EditProduct";
 import Orders from "../../pages/Orders/Orders";
+import Order from "../../pages/Orders/Order";
 import Profile from "../../pages/profile/Profile";
+import AdminDashboard from "../../pages/Admin/Pages/dashboard/Dashboard";
+import Vendors from "../../pages/Admin/Pages/Vendors/Vendors";
+import Users from "../../pages/Admin/Pages/Users/Users";
 
 function Layout(props) {
   var classes = useStyles();
 
   // global
   var layoutState = useLayoutState();
-
+  const access = JSON.parse(localStorage.getItem('token'))
+  const role = access?.role
+  
   return (
     <div className={classes.root}>
+    {role === "user" &&
+    
         <>
           <Header history={props.history} />
           <Sidebar />
@@ -64,6 +72,7 @@ function Layout(props) {
               <Route path="/app/addProduct" component={AddProduct} />
               <Route path="/app/profile" component={Profile} />
               <Route path="/app/orders" component={Orders} />
+              <Route path="/app/order/:id" component={Order} />
               <Route path="/app/typography" component={Typography} />
               {/* <Route path="/app/tables" component={Tables} /> */}
               <Route path="/app/notifications" component={Notifications} />
@@ -152,7 +161,34 @@ function Layout(props) {
               </div>
             </Box> */}
           </div>
-        </>
+        </>}
+        {role === "admin" &&  
+        <>
+        <Header history={props.history} />
+        <Sidebar />
+        <div
+          className={classnames(classes.content, {
+            [classes.contentShift]: layoutState.isSidebarOpened,
+          })}
+        >
+          <div className={classes.fakeToolbar} />
+          <Switch>
+              <Route path="/app/admin/dashboard" component={AdminDashboard} />
+           
+            <Route path="/app/admin/vendors" component={Vendors} />
+            {/* <Route path="/app/admin/product/:id" component={EditProduct} />
+            <Route path="/app/admin/addProduct" component={AddProduct} />
+            <Route path="/app/admin/profile" component={Profile} /> */}
+            <Route path="/app/admin/users" component={Users} />
+            {/* <Route path="/app/admin/order/:id" component={Order} /> */}
+          
+          
+          </Switch>
+        
+          
+        </div>
+      </>
+    }
     </div>
   );
 }

@@ -11,6 +11,9 @@ import ReactDOM from "react-dom";
 import { Form, Field } from "react-final-form";
 import { TextField, Checkbox, Radio, Select } from "final-form-material-ui";
 import {
+  Cancel as CancelIcon,
+} from "@material-ui/icons";
+import {
   Typography,
   Paper,
   Link,
@@ -38,10 +41,11 @@ import {
 } from "@material-ui/pickers";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
+import Swal from "sweetalert2";
 
 // import CircularProgress from '@mui/material/CircularProgress';
 
-function EditProduct() {
+function Order() {
   const history = useHistory();
 
   const [images, setImages] = useState([]);
@@ -51,7 +55,7 @@ function EditProduct() {
   const [imageUrl, setImageUrl] = useState([]);
   const [id, setId] = useState(null);
 
-  const token = localStorage.getItem("id_token");
+  const {token} = JSON.parse(localStorage.getItem('token'));
 
   var headers = {
     "Content-Type": "application/json",
@@ -66,27 +70,91 @@ function EditProduct() {
   const [category, setCategory] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [subCategory, setSubCategory] = useState([]);
-  function onImageChange(e) {
-    ;
-    const obj ={...e.target.files}
-    setImages([...images, ...e.target.files]);
-    setImageUrl([...imageUrl, URL.createObjectURL(...e.target.files)]);
-  }
-  useEffect(() => {
-      setLoading(true);
-      let formData = new FormData();
-        formData.append('id',ids)
+
+  const getImages = () => {
     axios({
-      method: "POST",
-      url: `https://cybercitiesapi.developer-um.xyz/api/show/product`,
+      method: "GET",
+      url: `https://cybercitiesapi.developer-um.xyz/api/image/${id}`,
       headers: headers,
-      data: formData,
     })
       .then((response) => {
         // console.log("response", response)
-        const Data = response.data.Products[0];
+        const Data = response.data;
+      
+        if (Data.Images) {
+          
+          setImages(Data.Images)
+      let tempImg = []
+      Data.Images.map((img,index)=>{
+          
+          tempImg.push({id:img.id,image:`https://cybercitiesapi.developer-um.xyz/storage/${img.image}`})
+      })
+        setImageUrl(tempImg)
+          console.log(response);
+          
+          
+        } else {
+          console.log("error");
+        }
+      })
+      .catch((error) => {
         
-        if (response.status == 200) {
+        console.log(error);
+      });
+  }
+
+
+  function onImageChange(e) {
+let formData = new FormData();
+    formData.append("product_image[]", ...e.target.files);
+    formData.append("product_id", id);
+
+
+    
+
+    axios({
+      method: "POST",
+      url: `https://cybercitiesapi.developer-um.xyz/api/add/image`,
+      data: formData,
+      headers: headers,
+    })
+      .then((response) => {
+        // console.log("response", response)
+        const Data = response.data;
+      
+        if (Data?.Successfull) {
+          console.log(response);
+          getImages()
+          
+        } else {
+          console.log("error");
+        }
+      })
+      .catch((error) => {
+        
+        console.log(error);
+      });
+    // const obj ={...e.target.files}
+    // setImages([...images, ...e.target.files]);
+    // setImageUrl([...imageUrl, {image:URL.createObjectURL(...e.target.files)}]);
+
+  }
+
+
+  useEffect(() => {
+      setLoading(true);
+   
+    axios({
+      method: "GET",
+      url: `https://cybercitiesapi.developer-um.xyz/api/seller-orders-details/${ids}`,
+      headers: headers,
+    })
+      .then((response) => {
+        
+        // console.log("response", response)
+        const Data = response.data
+        
+        if (Data.orders) {
           console.log(response);
             setId(Data.id)
             const cat = {...Data.category,value:Data.category.name,label:Data.category.name}
@@ -95,7 +163,7 @@ function EditProduct() {
             let tempImg = []
             Data.image.map((img,index)=>{
                 
-                tempImg.push(`https://cybercitiesapi.developer-um.xyz/storage/${img.image}`)
+                tempImg.push({id:img.id,image:`https://cybercitiesapi.developer-um.xyz/storage/${img.image}`})
             })
               setImageUrl(tempImg)
 
@@ -108,9 +176,35 @@ function EditProduct() {
         }
       })
       .catch((error) => {
+        
         console.log(error);
         setLoading(false)
       });
+      axios({
+        method: "GET",
+        url: `https://cybercitiesapi.developer-um.xyz/api/category`,
+        headers: headers,
+      })
+        .then((response) => {
+          // console.log("response", response)
+          const Data = response.data;
+          if (response.status == 200) {
+            console.log(response);
+            if (Data.Category.length > 0) {
+              let category = [];
+              Data.Category.map((cat) => {
+                let singleCategory = { ...cat, label: cat.name };
+                category.push(singleCategory);
+              });
+              setCategories(category);
+            }
+          } else {
+            console.log("error");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
   }, []);
 
  
@@ -118,14 +212,15 @@ function EditProduct() {
     values.preventDefault();
     setLoading(true);
     var formdata = new FormData();
+    formdata.append("id", id);
     formdata.append("product_name", values.target[0].value);
     formdata.append("brand", values.target[1].value);
     formdata.append("product_details", values.target[4].value);
-    formdata.append("category", category);
-    formdata.append("sub_category", subCategory);
-    images.map((image) => {
-      formdata.append("product_image[]", image);
-    });
+    formdata.append("category", category.label);
+    formdata.append("sub_category", subCategory.label);
+    // images.map((image) => {
+    //   formdata.append("product_image[]", image);
+    // });
     // formdata.append("product_image[1]", images[0]);
     formdata.append("color[]", "Green");
     formdata.append("size[]", values.target[11].value);
@@ -134,29 +229,35 @@ function EditProduct() {
     // formdata.append("product_selected_qty",values.target[7].value );
     formdata.append("product_status", values.target[7].value);
     formdata.append("product_stock", values.target[7].value);
-    ;
+    
     // const res = await axios.post('https://cybercitiesapi.developer-um.xyz/api/add/product',formdata,{headers:headers})
     axios({
       method: "POST",
-      url: `https://cybercitiesapi.developer-um.xyz/api/add/product`,
+      url: `https://cybercitiesapi.developer-um.xyz/api/update/product`,
       data: formdata,
       headers: headers,
     })
       .then((response) => {
         // console.log("response", response)
         const Data = response.data;
-        ;
-        if (response.status == 200) {
+        
+        if (Data.Successfull) {
           console.log(response);
           setLoading(false);
-          alert("Product has been added Successfully!");
-          window.location.href = "/app/products";
+          Swal.fire({
+            title: "Success",
+            text: "Product has been Updated Successfully!",
+            icon: "success",
+          });
+          history.push("/app/products");
+
         } else {
           console.log("error");
         }
       })
       .catch((error) => {
-        ;
+        
+        setLoading(false);
         console.log(error);
       });
     // const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -186,9 +287,9 @@ function EditProduct() {
   };
 
   const handleChange = (newValue, actionMeta) => {
-    setCategory(newValue.name);
+    setCategory({value:newValue?.name,label:newValue?.name});
     let category = [];
-    newValue.sub_category.map((cat) => {
+    newValue?.sub_category.map((cat) => {
       let singleCategory = { ...cat, label: cat.name };
       category.push(singleCategory);
     });
@@ -197,15 +298,45 @@ function EditProduct() {
     // console.groupEnd();
   };
   const handleChangeSubCategory = (newValue, actionMeta) => {
-    setSubCategory(newValue.name);
+    setSubCategory({value:newValue?.name,label:newValue?.name});
   };
+
+  const removeImage = (image) => {
+    
+    let formData = new FormData();
+    formData.append("id", image.id);
+    axios({
+      method: "POST",
+      url: `https://cybercitiesapi.developer-um.xyz/api/delete/image`,
+      data: formData,
+      headers: headers,
+    })
+      .then((response) => {
+        // console.log("response", response)
+        const Data = response.data;
+        ;
+        if (response.statusText == "OK") {
+          console.log(response);
+          getImages()
+          
+        } else {
+          console.log("error");
+        }
+      })
+      .catch((error) => {
+        ;
+        console.log(error);
+      });
+    // setImages(newImages);
+    // setImageUrl(newImagesUrl);
+  }
 
   return (
     <div style={{ display: "flex" }}>
       <div style={{ padding: 16, margin: "auto", maxWidth: 700, left: 0 }}>
         <CssBaseline />
         <Typography variant="h4" align="center" component="h1" gutterBottom>
-          Edit Product Details
+          Order Details
         </Typography>
 
         <Form
@@ -405,7 +536,15 @@ function EditProduct() {
                      
                         {imageUrl.map((image, index) => (
                            <Box mt={2} textAlign="center" style={{display:'flex',alignItems:'center'}}>
-                          <img style ={{  border: '1px solid #ddd',borderRadius: '6px'}} src={image} alt={"asd"} width="200px" />
+                          <img style ={{  border: '1px solid #ddd',borderRadius: '6px'}} src={image.image} alt={"asd"} width="200px" />
+                          <CancelIcon style={{ cursor: 'pointer',marginLeft:-25,marginTop:-80 }} onClick={() =>removeImage(image)} 
+              // classes={{
+              //   root: classNames(
+              //     classes.headerIcon,
+              //     classes.headerIconCollapse,
+              //   ),
+              // }}
+            />
                           {index === 0 && <Typography variant="h6">Display Image</Typography>}
                       </Box>
 
@@ -432,24 +571,16 @@ function EditProduct() {
                     />
                   </Grid>
                 </MuiPickersUtilsProvider> */}
-                  <Grid item style={{ marginTop: 16 }}>
-                    <Button
-                      type="button"
-                      variant="contained"
-                      onClick={reset}
-                      disabled={submitting || pristine}
-                    >
-                      Reset
-                    </Button>
-                  </Grid>
-                  <Grid item style={{ marginTop: 16 }}>
+                  <Grid item style={{ marginTop: 16 }}  xs={12}>
                     <Button
                       variant="contained"
                       color="primary"
                       type="submit"
+                      size="large"
+                      align="center"
                       disabled={submitting}
                     >
-                      Submit
+                      Save Changes
                     </Button>
                   </Grid>
                   {loading && (
@@ -512,4 +643,4 @@ function EditProduct() {
 }
 
 // ReactDOM.render(<App />, document.querySelector('#root'));
-export default EditProduct;
+export default Order;

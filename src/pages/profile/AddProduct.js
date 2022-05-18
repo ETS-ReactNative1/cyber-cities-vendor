@@ -46,7 +46,7 @@ function AddProduct() {
   const [images, setImages] = useState([]);
   const [imageUrl, setImageUrl] = useState([]);
 
-  const token = localStorage.getItem("id_token");
+  const {token} = JSON.parse(localStorage.getItem('token'));
 
   
   var headers = {
