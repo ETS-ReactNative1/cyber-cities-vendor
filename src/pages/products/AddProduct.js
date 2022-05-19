@@ -1,59 +1,47 @@
-import React, { useEffect, useState } from "react";
-import ReactDOM from "react-dom";
-import { Form, Field } from "react-final-form";
-import { TextField, Checkbox, Radio, Select } from "final-form-material-ui";
 import {
-  Typography,
-  Paper,
-  Link,
-  Grid,
-  Button,
-  CssBaseline,
-  RadioGroup,
-  FormLabel,
-  MenuItem,
-  FormGroup,
-  FormControl,
   Box,
-  FormControlLabel,
+  Button,
   CircularProgress,
+  CssBaseline,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  FormLabel,
+  Grid,
+  Checkbox,
+  Paper,
+  RadioGroup,
+  Typography,
+  Radio,
 } from "@material-ui/core";
-import CreatableSelect from "react-select/creatable";
-import { ActionMeta, OnChangeValue } from "react-select";
-
-// Picker
-// import DateFnsUtils from '@date-io/date-fns';
-import {
-  MuiPickersUtilsProvider,
-  TimePicker,
-  DatePicker,
-} from "@material-ui/pickers";
 import axios from "axios";
-import Swal from "sweetalert2";
+import {  TextField } from "final-form-material-ui";
+import React, { useEffect, useState } from "react";
+import { Field, Form } from "react-final-form";
 import { useHistory } from "react-router-dom";
+import CreatableSelect from "react-select/creatable";
+import Swal from "sweetalert2";
 
 // import CircularProgress from '@mui/material/CircularProgress';
 
 function AddProduct() {
   const [images, setImages] = useState([]);
   const [imageUrl, setImageUrl] = useState([]);
-
-  const {token} = JSON.parse(localStorage.getItem('token'));
-
-  
-  var headers = {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  };
-  function onImageChange(e) {
-    ;
-    setImages([...images, ...e.target.files]);
-    setImageUrl([...imageUrl, URL.createObjectURL(...e.target.files)]);
-  }
+  const { token } = JSON.parse(localStorage.getItem("token"));
   const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [subCategory, setSubCategory] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [details, setDetails] = useState("");
+  const [type, setType] = useState('new');
+  const [featured, setFeatured] = useState('Standard');
+
+  var headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
+
   useEffect(() => {
     axios({
       method: "GET",
@@ -83,11 +71,15 @@ function AddProduct() {
   }, []);
   const history = useHistory();
 
-  const [loading, setLoading] = useState(false);
-  const [details, setDetails] = useState("");
+  function onImageChange(e) {
+    setImages([...images, ...e.target.files]);
+    setImageUrl([...imageUrl, URL.createObjectURL(...e.target.files)]);
+  }
+
   const onSubmit = async (values) => {
     values.preventDefault();
     setLoading(true);
+    
     var formdata = new FormData();
     formdata.append("product_name", values.target[0].value);
     formdata.append("brand", values.target[1].value);
@@ -98,15 +90,17 @@ function AddProduct() {
       formdata.append("product_image[]", image);
     });
     // formdata.append("product_image[1]", images[0]);
-    formdata.append("color[]", "Green");
-    formdata.append("size[]", values.target[11].value);
-    formdata.append("price", values.target[13].value);
-    formdata.append("discount", values.target[14].value);
+    // formdata.append("color[]", "Green");
+    formdata.append("size", values.target[9].value);
+    formdata.append("price", values.target[10].value);
+    formdata.append("discount", values.target[11].value);
     // formdata.append("product_selected_qty",values.target[7].value );
-    formdata.append("product_status", values.target[7].value);
-    formdata.append("product_stock", values.target[7].value);
-    ;
+    formdata.append("product_status", type);
+    
+    formdata.append("featured",featured)
+    // formdata.append("product_stock", values.target[7].value);
     // const res = await axios.post('https://cybercitiesapi.developer-um.xyz/api/add/product',formdata,{headers:headers})
+    
     axios({
       method: "POST",
       url: `https://cybercitiesapi.developer-um.xyz/api/add/product`,
@@ -114,9 +108,9 @@ function AddProduct() {
       headers: headers,
     })
       .then((response) => {
+        
         // console.log("response", response)
         const Data = response.data;
-        ;
         if (response.status == 200) {
           console.log(response);
           setLoading(false);
@@ -131,14 +125,20 @@ function AddProduct() {
         }
       })
       .catch((error) => {
-        ;
+        
+        Swal.fire({
+          title: "Sorry",
+          text: "Can't add product now!",
+          icon: "error",
+        });
         console.log(error);
       });
     // const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
     // await sleep(3000);
-    // 
+    
     // window.alert(JSON.stringify(values, 0, 2));
+  
   };
   const validate = (values) => {
     const errors = {};
@@ -147,6 +147,9 @@ function AddProduct() {
     }
     if (!values.brand) {
       errors.brand = "Required";
+    }
+    if (!values.size) {
+      errors.size = "Required";
     }
     if (!values.product_details) {
       errors.product_details = "Required";
@@ -160,45 +163,29 @@ function AddProduct() {
     return errors;
   };
 
-  const handleChange = (newValue, actionMeta) => {
-    setCategory(newValue.name);
+  const handleCategory = (newValue, actionMeta) => {
+    if (newValue?.value) {
+      setSubCategories([]);
+      return setCategory(newValue?.value);
+    }
+    setCategory(newValue?.name ? newValue?.name : "");
     let category = [];
-    newValue.sub_category.map((cat) => {
-      let singleCategory = { ...cat, label: cat.name };
-      category.push(singleCategory);
-    });
-    setSubCategories(category);
-    console.log(`action: ${actionMeta.action}`);
-    // console.groupEnd();
+    if (newValue !== null && newValue !== undefined) {
+      newValue.sub_category.map((cat) => {
+        let singleCategory = { ...cat, label: cat.name };
+        category.push(singleCategory);
+      });
+
+      setSubCategories(category);
+    }
   };
   const handleChangeSubCategory = (newValue, actionMeta) => {
-    setSubCategory(newValue.name);
+    if (newValue?.value) {
+      return setSubCategory(newValue?.value);
+    }
+    setSubCategory(newValue?.name ? newValue?.name : "");
   };
 
-  //  const  handleInputChange = (inputValue,actionMeta) => {
-  //     // console.group('Input Changed');
-  //     console.log(inputValue);
-  //     console.log(`action: ${actionMeta.action}`);
-  //     // console.groupEnd();
-  //   };
-
-  const colourOptions = [
-    {
-      value: "Green",
-      label: "Green",
-      name: "colour",
-    },
-    {
-      value: "Grseen",
-      label: "Gresaen",
-      name: "colour",
-    },
-    {
-      value: "Greewn",
-      label: "Greedn",
-      name: "colour",
-    },
-  ];
   return (
     <div style={{ display: "flex" }}>
       <div style={{ padding: 16, margin: "auto", maxWidth: 700, left: 0 }}>
@@ -238,7 +225,7 @@ function AddProduct() {
                   <Grid item xs={6}>
                     <CreatableSelect
                       isClearable
-                      onChange={handleChange}
+                      onChange={handleCategory}
                       placeholder="Select Category"
                       // onInputChange={handleInputChange}
                       options={categories}
@@ -279,36 +266,44 @@ function AddProduct() {
                     }
                   /> */}
                   </Grid>
-                  <Grid item>
+                  <Grid item xs={4}>
                     <FormControl component="fieldset">
                       <FormLabel component="legend">Status</FormLabel>
                       <RadioGroup row>
                         <FormControlLabel
                           label="New"
+                          // checked={true}
+                          onChange={(event) => {
+                            setType(event.target.value);
+                          }}
                           control={
-                            <Field
+                            <Radio
                               name="status"
-                              component={Radio}
                               type="radio"
                               value="new"
+                            
                             />
                           }
                         />
                         <FormControlLabel
                           label="Old"
+                          onChange={(event) => {
+                            
+                            setType(event.target.value);
+                          }}
                           control={
-                            <Field
+                            <Radio
                               name="status"
-                              component={Radio}
                               type="radio"
                               value="old"
+                            
                             />
                           }
                         />
                       </RadioGroup>
                     </FormControl>
                   </Grid>
-                  <Grid item>
+                  {/* <Grid item>
                     <FormControl component="fieldset">
                       <FormLabel component="legend">Sizes</FormLabel>
                       <FormGroup row>
@@ -347,7 +342,7 @@ function AddProduct() {
                         />
                       </FormGroup>
                     </FormControl>
-                  </Grid>
+                  </Grid> */}
                   {/* <Grid item xs={12}>
                   <Field
                     fullWidth
@@ -357,6 +352,16 @@ function AddProduct() {
                     label="Notes"
                   />
                 </Grid> */}
+                 <Grid item xs={8}>
+                    <Field
+                      fullWidth
+                      required
+                      name="size"
+                      component={TextField}
+                      type="text"
+                      label="Size"
+                    />
+                  </Grid>
                   <Grid item xs={6}>
                     <Field
                       fullWidth
@@ -377,7 +382,7 @@ function AddProduct() {
                       label="Discounted Price"
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid item xs={4}>
                     <input
                       style={{ display: "none" }}
                       type="file"
@@ -396,17 +401,58 @@ function AddProduct() {
                       </Button>
                     </label>
                   </Grid>
+                  <Grid item xs={8}>
+                    <FormControl component="fieldset">
+                      {/* <FormLabel component="legend">Request this Product to featured on Main Page </FormLabel> */}
+                      <RadioGroup row>
+                        <FormControlLabel
+                          label="Request this Product to featured on Main Page"
+                          // checked={true}
+                          onChange={(event) => {
+                            
+                            if(event.target.checked){
+                              setFeatured("Featured");
+                            }else{
+                              setFeatured("Standard");
+                            }
+                            
+                          }}
+                          control={
+                            <Checkbox
+                              name="featured"
+                              type="checkbox"
+                              value="featured"
+                            
+                            />
+                          }
+                        />
+                       
+                      </RadioGroup>
+                    </FormControl>
+                  </Grid>
 
                   {images.length > 0 && (
                     <Grid fullWidth item xs={12}>
-                     
-                        {imageUrl.map((image, index) => (
-                           <Box mt={2} textAlign="center" style={{display:'flex',alignItems:'center'}}>
-                          <img style ={{  border: '1px solid #ddd',borderRadius: '6px'}} src={image} alt={"asd"} width="200px" />
-                          {index === 0 && <Typography variant="h6">Display Image</Typography>}
-                      </Box>
-
-                        ))}
+                      {imageUrl.map((image, index) => (
+                        <Box
+                          mt={2}
+                          textAlign="center"
+                          style={{ display: "flex", alignItems: "center" }}
+                        >
+                          <img
+                            style={{
+                              border: "1px solid #ddd",
+                              borderRadius: "6px",
+                            }}
+                            src={image}
+                            alt={"asd"}
+                            width="200px"
+                          />
+                          {index === 0 && (
+                            <Typography variant="h6">Display Image</Typography>
+                          )}
+                        </Box>
+                      ))}
                     </Grid>
                   )}
                   {/* <MuiPickersUtilsProvider utils={DateFnsUtils}> */}
@@ -429,15 +475,18 @@ function AddProduct() {
                     />
                   </Grid>
                 </MuiPickersUtilsProvider> */}
-                  <Grid item style={{ marginTop: 16 }}>
-                  
-                  </Grid>
-                  <Grid item style={{ marginTop: 16 }}>
+                  {/* <Grid item style={{ marginTop: 16 }}></Grid> */}
+                  <Grid item xs={12} >
                     <Button
+                      mt={12}
                       variant="contained"
                       color="primary"
                       type="submit"
-                      disabled={images.length === 0 || category.length === 0 || subCategory.length === 0}
+                      disabled={
+                        images.length === 0 ||
+                        category.length === 0 ||
+                        subCategory.length === 0
+                      }
                     >
                       Submit
                     </Button>

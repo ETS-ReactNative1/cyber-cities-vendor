@@ -79,10 +79,10 @@ let token =  access?.token
       const Data = response.data
       if (Data.status == "success") {
         let product = []
-        setTotalSales(Data.totalsales_count[0].net_amount)
-        setTodaySales(Data.todaysales_count[0].net_amount)
-        setLastWeekySales(Data.lastweeksales_count[0].net_amount)
-        setLastMonthSales(Data.lastmonthsales_count[0].net_amount)
+        setTotalSales(Data.totalsales_count[0]?.net_amount)
+        setTodaySales(Data.todaysales_count[0]?.net_amount)
+        setLastWeekySales(Data.lastweeksales_count[0]?.net_amount)
+        setLastMonthSales(Data.lastmonthsales_count[0]?.net_amount)
       }
      
     }).catch((error)=>{
@@ -126,7 +126,7 @@ let token =  access?.token
         const color = ["primary", "secondary", "warning", "success"];
         
         for(let i=0;i<4;i++){
-          product.push({name:Data.seller_top_products[i].name,value:Data.seller_top_products[i].orders_count,color:color[i]})
+          product.push({name:Data.seller_top_products[i]?.name,value:Data.seller_top_products[i]?.orders_count,color:color[i]})
         }
       setTopProduct(product)
       }
@@ -152,7 +152,7 @@ let token =  access?.token
         let customer = []
         const color = ["primary", "secondary", "warning", "success"];
         for(let i=0;i<Data.seller_top_customers.length;i++){
-          customer.push({name:Data.seller_top_customers[i].users.name,value:Data.seller_top_customers[i].total_amount,color:color[i]})
+          customer.push({name:Data.seller_top_customers[i].users?.name,value:Data.seller_top_customers[i]?.total_amount,color:color[i]})
         }
         setTopCustomer(customer)
       }
@@ -291,7 +291,7 @@ let token =  access?.token
                   colorBrightness="secondary"
                   className={classes.legendElementText}
                 >
-                {topCategory[0]?.categories.name}-{topCategory[0]?.name}
+                {topCategory[0]?.categories?.name}-{topCategory[0]?.name}
                 </Typography>
               </div>
               <div className={classes.legendElement}>
@@ -301,7 +301,7 @@ let token =  access?.token
                   colorBrightness="secondary"
                   className={classes.legendElementText}
                 >
-                    {topCategory[1]?.categories.name}-{topCategory[1]?.name}
+                    {topCategory[1]?.categories?.name}-{topCategory[1]?.name}
                 </Typography>
               </div>
               <div className={classes.legendElement}>
@@ -311,7 +311,7 @@ let token =  access?.token
                   colorBrightness="secondary"
                   className={classes.legendElementText}
                 >
-                    {topCategory[2]?.categories.name}-{topCategory[2]?.name}
+                    {topCategory[2]?.categories?.name}-{topCategory[2]?.name}
                 </Typography>
               </div>
             </div>
@@ -322,7 +322,7 @@ let token =  access?.token
                 colorBrightness="secondary"
                 className={classes.progressSectionTitle}
               >
-                   {topCategory[0]?.categories.name}-{topCategory[0]?.name}
+                   {topCategory[0]?.categories?.name}-{topCategory[0]?.name}
               </Typography>
               <LinearProgress
                 variant="determinate"
@@ -338,7 +338,7 @@ let token =  access?.token
                 colorBrightness="secondary"
                 className={classes.progressSectionTitle}
               >
-                   {topCategory[1]?.categories.name}-{topCategory[1]?.name}
+                   {topCategory[1]?.categories?.name}-{topCategory[1]?.name}
               </Typography>
               <LinearProgress
                 variant="determinate"
@@ -354,7 +354,7 @@ let token =  access?.token
                 colorBrightness="secondary"
                 className={classes.progressSectionTitle}
               >
-                  {topCategory[2]?.categories.name}-{topCategory[2]?.name}
+                  {topCategory[2]?.categories?.name}-{topCategory[2]?.name}
               </Typography>
               <LinearProgress
                 variant="determinate"
@@ -487,6 +487,7 @@ let token =  access?.token
             </Grid>
           </Widget>
         </Grid>}
+        
         <Grid item lg={3} md={4} sm={6} xs={12}>
           <Widget title="Top Customers" disableWidgetMenu = {true} upperTitle className={classes.card}>
             <Grid container spacing={2} style={{display:'block',alignItems:'center',justifyContent:'center'}}>

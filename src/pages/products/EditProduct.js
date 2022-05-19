@@ -9,13 +9,15 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { Form, Field } from "react-final-form";
-import { TextField, Checkbox, Radio, Select } from "final-form-material-ui";
+import { TextField,Select } from "final-form-material-ui";
 import {
   Cancel as CancelIcon,
 } from "@material-ui/icons";
 import {
   Typography,
   Paper,
+  Radio,
+  Checkbox,
   Link,
   Grid,
   Button,
@@ -70,7 +72,8 @@ function EditProduct() {
   const [category, setCategory] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [subCategory, setSubCategory] = useState([]);
-
+  const [type, setType] = useState('new');
+  const [featured, setFeatured] = useState('Standard');
   const getImages = () => {
     axios({
       method: "GET",
@@ -158,7 +161,6 @@ let formData = new FormData();
         if (response.status == 200) {
           console.log(response);
             setId(Data.id)
-            const cat = {...Data.category,value:Data.category.name,label:Data.category.name}
             setProductFromAPI(Data)
             setImages(Data.image)
             let tempImg = []
@@ -170,6 +172,9 @@ let formData = new FormData();
 
             setCategory({value:Data.category.name,label:Data.category.name})
             setSubCategory({value:Data.sub_category.name,label:Data.sub_category.name})
+            
+            setFeatured(Data.featured)
+            setType(Data.type)
             setLoading(false)
         } else {
           console.log("error");
@@ -222,13 +227,14 @@ let formData = new FormData();
     //   formdata.append("product_image[]", image);
     // });
     // formdata.append("product_image[1]", images[0]);
-    formdata.append("color[]", "Green");
-    formdata.append("size[]", values.target[11].value);
-    formdata.append("price", values.target[13].value);
-    formdata.append("discount", values.target[14].value);
+    // formdata.append("color[]", "Green");
+    formdata.append("size", values.target[9].value);
+    formdata.append("price", values.target[10].value);
+    formdata.append("discount", values.target[11].value);
     // formdata.append("product_selected_qty",values.target[7].value );
-    formdata.append("product_status", values.target[7].value);
-    formdata.append("product_stock", values.target[7].value);
+    formdata.append("product_status", type);
+    formdata.append("featured", featured);
+    // formdata.append("product_stock", values.target[7].value);
     
     // const res = await axios.post('https://cybercitiesapi.developer-um.xyz/api/add/product',formdata,{headers:headers})
     axios({
@@ -239,6 +245,7 @@ let formData = new FormData();
     })
       .then((response) => {
         // console.log("response", response)
+        
         const Data = response.data;
         
         if (Data.Successfull) {
@@ -286,20 +293,45 @@ let formData = new FormData();
     return errors;
   };
 
-  const handleChange = (newValue, actionMeta) => {
+  const handleCategory = (newValue, actionMeta) => {
+    
+    if (newValue?.value) {
+      setSubCategories([]);
+      return setCategory({value:newValue?.value,label:newValue?.value});
+    }
     setCategory({value:newValue?.name,label:newValue?.name});
     let category = [];
-    newValue?.sub_category.map((cat) => {
-      let singleCategory = { ...cat, label: cat.name };
-      category.push(singleCategory);
-    });
-    setSubCategories(category);
-    console.log(`action: ${actionMeta.action}`);
-    // console.groupEnd();
+    if (newValue !== null && newValue !== undefined) {
+      newValue.sub_category.map((cat) => {
+        let singleCategory = { ...cat, label: cat.name };
+        category.push(singleCategory);
+      });
+
+      setSubCategories(category);
+    }
   };
   const handleChangeSubCategory = (newValue, actionMeta) => {
+    if (newValue?.value) {
+      return setSubCategory({value:newValue?.value,label:newValue?.value});
+    }
     setSubCategory({value:newValue?.name,label:newValue?.name});
   };
+
+
+  // const handleChange = (newValue, actionMeta) => {
+  //   setCategory({value:newValue?.name,label:newValue?.name});
+  //   let category = [];
+  //   newValue?.sub_category.map((cat) => {
+  //     let singleCategory = { ...cat, label: cat.name };
+  //     category.push(singleCategory);
+  //   });
+  //   setSubCategories(category);
+  //   console.log(`action: ${actionMeta.action}`);
+  //   // console.groupEnd();
+  // };
+  // const handleChangeSubCategory = (newValue, actionMeta) => {
+  //   setSubCategory({value:newValue?.name,label:newValue?.name});
+  // };
 
   const removeImage = (image) => {
     
@@ -371,7 +403,7 @@ let formData = new FormData();
                     <CreatableSelect
                             value={category}
                       isClearable
-                      onChange={handleChange}
+                      onChange={handleCategory}
                       placeholder="Select Category"
                       // onInputChange={handleInputChange}
                       options={categories}
@@ -413,75 +445,52 @@ let formData = new FormData();
                     }
                   /> */}
                   </Grid>
-                  <Grid item>
+                  <Grid item xs={4}>
                     <FormControl component="fieldset">
                       <FormLabel component="legend">Status</FormLabel>
                       <RadioGroup row>
                         <FormControlLabel
                           label="New"
+                          // checked={true}
+                          onChange={(event) => {
+                            setType(event.target.value);
+                          }}
                           control={
-                            <Field
+                            <Radio
                               name="status"
-                              component={Radio}
                               type="radio"
                               value="new"
+                              checked= {type==="new"}
                             />
                           }
                         />
                         <FormControlLabel
                           label="Old"
+                          onChange={(event) => {
+                            setType(event.target.value);
+                          }}
                           control={
-                            <Field
+                            <Radio
                               name="status"
-                              component={Radio}
                               type="radio"
                               value="old"
+                              checked= {type==="old"}
                             />
                           }
                         />
                       </RadioGroup>
                     </FormControl>
                   </Grid>
-                  <Grid item>
-                    <FormControl component="fieldset">
-                      <FormLabel component="legend">Sizes</FormLabel>
-                      <FormGroup row>
-                        <FormControlLabel
-                          label="Small"
-                          control={
-                            <Field
-                              name="sizes"
-                              component={Checkbox}
-                              type="checkbox"
-                              value="Small"
-                            />
-                          }
-                        />
-                        <FormControlLabel
-                          label="Medium"
-                          control={
-                            <Field
-                              name="sizes"
-                              component={Checkbox}
-                              type="checkbox"
-                              value="Medium"
-                            />
-                          }
-                        />
-                        <FormControlLabel
-                          label="Large"
-                          control={
-                            <Field
-                              name="sizes"
-                              component={Checkbox}
-                              type="checkbox"
-                              value="Large"
-                            />
-                          }
-                        />
-                      </FormGroup>
-                    </FormControl>
-                  </Grid>
+                  <Grid item xs={8}>
+                    <Field
+                      fullWidth
+                      required
+                      name="size"
+                      component={TextField}
+                      type="text"
+                      label="Size"
+                    />
+                    </Grid>
                   {/* <Grid item xs={12}>
                   <Field
                     fullWidth
@@ -511,7 +520,7 @@ let formData = new FormData();
                       label="Discounted Price"
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid item xs={4}>
                     <input
                       style={{ display: "none" }}
                       type="file"
@@ -529,6 +538,34 @@ let formData = new FormData();
                         Upload Image
                       </Button>
                     </label>
+                  </Grid>
+                  <Grid item xs={8}>
+                    <FormControl component="fieldset">
+                      <RadioGroup row>
+                        <FormControlLabel
+                          label="Request this Product to featured on Main Page"
+                          checked={featured === "Featured"}
+                          onChange={(event) => {
+                            
+                            if(event.target.checked){
+                              setFeatured("Featured");
+                            }else{
+                              setFeatured("Standard");
+                            }
+                            
+                          }}
+                          control={
+                            <Checkbox
+                              name="featured"
+                              type="checkbox"
+                              value="featured"
+                            
+                            />
+                          }
+                        />
+                       
+                      </RadioGroup>
+                    </FormControl>
                   </Grid>
 
                   {images.length > 0 && (

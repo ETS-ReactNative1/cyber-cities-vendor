@@ -43,6 +43,7 @@ function Sidebar({ location }) {
   
     { id: 1, label: "Vendors", link: "/app/admin/vendors", icon: <FAQIcon /> },
     { id: 2, label: "Users", link: "/app/admin/users", icon: <FAQIcon /> },
+    { id: 3, label: "Featured Products", link: "/app/admin/featuredProducts", icon: <FAQIcon /> },
     { id: 5, type: "divider" },
    
   ]}

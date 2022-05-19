@@ -43,6 +43,7 @@ import Profile from "../../pages/profile/Profile";
 import AdminDashboard from "../../pages/Admin/Pages/dashboard/Dashboard";
 import Vendors from "../../pages/Admin/Pages/Vendors/Vendors";
 import Users from "../../pages/Admin/Pages/Users/Users";
+import FeaturedProducts from "../../pages/Admin/Pages/FeaturedProducts/FeaturedProducts";
 
 function Layout(props) {
   var classes = useStyles();
@@ -180,6 +181,7 @@ function Layout(props) {
             <Route path="/app/admin/addProduct" component={AddProduct} />
             <Route path="/app/admin/profile" component={Profile} /> */}
             <Route path="/app/admin/users" component={Users} />
+            <Route path="/app/admin/featuredProducts" component={FeaturedProducts} />
             {/* <Route path="/app/admin/order/:id" component={Order} /> */}
           
           
